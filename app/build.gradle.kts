@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
+
+    // google services gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -80,5 +83,13 @@ dependencies {
     val coroutines_version = "1.3.9"
     implementation("androidx.room:room-ktx:$room_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
+
+
+    // firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BOM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
 
 }
