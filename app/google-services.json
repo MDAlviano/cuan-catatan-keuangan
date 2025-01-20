@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "946680723238",
+    "project_id": "cuan-app-d03a8",
+    "storage_bucket": "cuan-app-d03a8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946680723238:android:ca56cc2a71217293dcb3e7",
+        "android_client_info": {
+          "package_name": "com.cuan.catatankeuangan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmMhs8NqNheaE00yXfqnijdgvIB-_hYME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
