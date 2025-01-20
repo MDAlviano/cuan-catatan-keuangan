@@ -84,12 +84,15 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
 
-
     // firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BOM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
+
+    // Navigation Compose
+    val nav_version = "2.8.5"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
 
 }
