@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -94,7 +95,7 @@ private fun ButtonPreview() {
             onClick = { Toast.makeText(context, "Clicked!", Toast.LENGTH_SHORT).show() },
             text = "Login",
             textColor = Color.White,
-            icon = Icons.Default.ArrowForward
+            icon = Icons.AutoMirrored.Default.ArrowForward
         )
     }
 }
