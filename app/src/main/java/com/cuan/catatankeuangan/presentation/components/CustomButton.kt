@@ -33,7 +33,7 @@ import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 
 @Composable
-fun Button(
+fun CustomButton(
     onClick: () -> Unit,
     text: String,
     textColor: Color = Color.White,
@@ -90,7 +90,7 @@ private fun ButtonPreview() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-        Button(
+        CustomButton(
             onClick = { Toast.makeText(context, "Clicked!", Toast.LENGTH_SHORT).show() },
             text = "Login",
             textColor = Color.White,
