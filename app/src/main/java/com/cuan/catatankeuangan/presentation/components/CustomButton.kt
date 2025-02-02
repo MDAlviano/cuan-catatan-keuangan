@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.cuan.catatankeuangan.presentation.theme.Color1
@@ -35,6 +37,8 @@ import com.cuan.catatankeuangan.presentation.theme.Color2
 @Composable
 fun CustomButton(
     onClick: () -> Unit,
+    width: Dp = 280.dp,
+    height: Dp = 48.dp,
     text: String,
     textColor: Color = Color.White,
     fontSize: TextUnit = MaterialTheme.typography.titleMedium.fontSize,
@@ -52,7 +56,8 @@ fun CustomButton(
         Box(
             modifier = Modifier
                 .background(gradient)
-                .width(230.dp)
+                .width(width)
+                .height(height)
                 .padding(vertical = 10.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -94,7 +99,7 @@ private fun ButtonPreview() {
             onClick = { Toast.makeText(context, "Clicked!", Toast.LENGTH_SHORT).show() },
             text = "Login",
             textColor = Color.White,
-            icon = Icons.AutoMirrored.Default.ArrowForward
+            icon = Icons.AutoMirrored.Default.ArrowForward,
         )
     }
 }
