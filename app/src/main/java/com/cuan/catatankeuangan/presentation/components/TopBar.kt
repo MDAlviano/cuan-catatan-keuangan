@@ -24,6 +24,7 @@ import com.cuan.catatankeuangan.presentation.theme.Color4
 
 @Composable
 fun TopBar(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String
 ) {

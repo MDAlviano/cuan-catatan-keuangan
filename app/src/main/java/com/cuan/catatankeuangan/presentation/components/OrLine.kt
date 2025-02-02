@@ -13,13 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 
 @Composable
-fun OrLine() {
+fun OrLine(paddingHorizontal: Dp, paddingVertical: Dp) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = paddingHorizontal, vertical = paddingVertical),
         verticalAlignment = Alignment.CenterVertically
     ) {
         CustomRowItem(
@@ -50,5 +51,5 @@ fun RowScope.CustomRowItem(weight: Float, color: Color = OptionalColor3) {
 @Preview(showBackground = true)
 @Composable
 private fun OrLinePreview() {
-    OrLine()
+    OrLine(4.dp, 30.dp)
 }
