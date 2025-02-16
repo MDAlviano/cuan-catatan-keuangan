@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.cuan.catatankeuangan.data.local.entities.Transaction
+import com.cuan.catatankeuangan.data.local.entities.TransactionType
 
 @Dao
 interface TransactionDao {
@@ -21,7 +22,10 @@ interface TransactionDao {
     @Delete
     suspend fun deleteTransaction(transaction: Transaction)
 
-    @Query("SELECT * FROM transaction_table")
+    @Query("SELECT * FROM transaction_table ORDER BY id DESC")
     fun getAllTransaction(): LiveData<List<Transaction>>
+
+    @Query("SELECT COALESCE(SUM(total), 0) FROM transaction_table WHERE tipeTransaksi = :type")
+    fun getTotalByType(type: TransactionType): LiveData<Long>
 
 }

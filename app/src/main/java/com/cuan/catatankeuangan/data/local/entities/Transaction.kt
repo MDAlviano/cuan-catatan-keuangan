@@ -9,9 +9,13 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "transaction_table")
 data class Transaction(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    val totalAmount: Long,
-//    val transactionType: TransactionType,
-    val description: String?,
+    val total: Long,
+    val tipeTransaksi: TransactionType,
+    val deskripsi: String?,
     val timestamp: Long,
-    val productDetails: String?
+//    val productDetails: String?
 ) : Parcelable
+
+enum class TransactionType {
+    MASUK, KELUAR
+}
