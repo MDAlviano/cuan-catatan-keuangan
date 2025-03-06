@@ -27,7 +27,7 @@ import com.cuan.catatankeuangan.presentation.components.PasswordTextFields
 import com.cuan.catatankeuangan.presentation.components.RedirectText
 import com.cuan.catatankeuangan.presentation.components.TextFields
 import com.cuan.catatankeuangan.presentation.components.TopBar
-import com.cuan.catatankeuangan.presentation.theme.Color3
+import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 
 @Composable
@@ -78,7 +78,7 @@ fun LoginScreen() {
 
                         },
                     text = "Lupa Password?",
-                    color = Color3,
+                    color = Color1,
                     fontWeight = FontWeight.Medium,
                     textDecoration = TextDecoration.Underline,
                     textAlign = TextAlign.End

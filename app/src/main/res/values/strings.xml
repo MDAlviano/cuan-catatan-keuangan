@@ -1,3 +1,22 @@
 <resources>
-    <string name="app_name">Cuan</string>
+    <string name="app_name" translatable="false">Cuan</string>
+
+    <!--  Nav strings  -->
+    <string name="home_nav">Home</string>
+    <string name="product_nav">Produk</string>
+    <string name="history_nav">Riwayat</string>
+    <string name="report_nav">Laporan</string>
+    <string name="profile_nav">Profil</string>
+
+    <!--  Home page strings  -->
+    <string name="balance_home">Saldo</string>
+    <string name="today_home">Hari ini</string>
+    <string name="latest_transaction_home">Transaksi terkini</string>
+    <string name="details_home">Lebih detail</string>
+
+    <!--  Global  -->
+    <string name="income">Pemasukan</string>
+    <string name="expense">Pengeluaran</string>
+    <string name="search_product">Telusuri produk</string>
+
 </resources>

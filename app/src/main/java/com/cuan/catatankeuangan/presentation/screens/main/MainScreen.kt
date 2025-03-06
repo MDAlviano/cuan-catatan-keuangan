@@ -1,9 +1,9 @@
 package com.cuan.catatankeuangan.presentation.screens.main
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -11,7 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -19,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -68,7 +68,11 @@ fun BottomBar(navController: NavHostController, onHeightChanged: (Int) -> Unit) 
 
     NavigationBar(
         containerColor = Color2,
-        modifier = Modifier.onSizeChanged { size -> onHeightChanged(size.height) }) {
+        modifier = Modifier
+            .fillMaxWidth()
+            .onSizeChanged { size -> onHeightChanged(size.height) }
+//            .padding(horizontal = 24.dp)
+    ) {
         screens.forEach { screen ->
             AddItem(
                 screen = screen,
@@ -86,19 +90,20 @@ fun RowScope.AddItem(
     currentDestination: NavDestination?,
     navController: NavHostController
 ) {
+    val isSelected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+
     NavigationBarItem(
         label = {
-            Text(text = screen.title, color = Color.White)
+            Text(text = screen.getTitle(), color = Color.White)
         },
         icon = {
             Icon(
-                imageVector = screen.icon,
-                contentDescription = "Navigation Icon"
+                painter = painterResource(if (isSelected) screen.activeIcon else screen.icon),
+                contentDescription = "${screen.getTitle()} navigation icon",
+                modifier = Modifier.width(35.dp)
             )
         },
-        selected = currentDestination?.hierarchy?.any {
-            it.route == screen.route
-        } == true,
+        selected = isSelected,
         onClick = {
             navController.navigate(screen.route) {
                 popUpTo(navController.graph.findStartDestination().id)

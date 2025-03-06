@@ -1,6 +1,5 @@
 package com.cuan.catatankeuangan.presentation.screens.home
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -41,7 +40,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,8 +48,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -67,12 +65,12 @@ import com.cuan.catatankeuangan.presentation.components.TransactionCard
 import com.cuan.catatankeuangan.presentation.screens.newtransaction.NewTransactionDialog
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
-import com.cuan.catatankeuangan.presentation.theme.Color2Color1Vert
-import com.cuan.catatankeuangan.presentation.theme.Color5
+import com.cuan.catatankeuangan.presentation.theme.Color3
+import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
+import com.cuan.catatankeuangan.presentation.theme.VerticalGradient
+import com.cuan.catatankeuangan.presentation.theme.outfitFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
-import com.cuan.catatankeuangan.presentation.utils.getCustomBottomPadding
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -80,13 +78,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen( bottomNavHeight: Dp,transactionViewModel: TransactionViewModel) {
+fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) {
     val transactions by transactionViewModel.allTransactions.observeAsState(initial = emptyList())
     val totalSaldo by transactionViewModel.totalSaldo.observeAsState(initial = 0L)
     val totalPemasukan by transactionViewModel.totalPemasukan.observeAsState(initial = 0L)
     val totalPengeluaran by transactionViewModel.totalPengeluaran.observeAsState(initial = 0L)
-
-    Log.d("bottomNavHeight", "HomeScreen bottom nav: $bottomNavHeight")
 
     val customTopPadding = getCustomTopPadding(24.dp)
 
@@ -113,10 +109,12 @@ fun HomeScreen( bottomNavHeight: Dp,transactionViewModel: TransactionViewModel) 
             }
     }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(0.dp, 0.dp, 0.dp, bottomNavHeight)
-        .background(Color.White)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(0.dp, 0.dp, 0.dp, bottomNavHeight)
+            .background(Color.White)
+    ) {
         AnimatedVisibility(
             visible = isFabVisible,
             enter = fadeIn() + slideInHorizontally { it },
@@ -146,7 +144,7 @@ fun HomeScreen( bottomNavHeight: Dp,transactionViewModel: TransactionViewModel) 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color2Color1Vert)
+                    .background(VerticalGradient(Color2, Color1))
                     .padding(24.dp, customTopPadding, 24.dp, 16.dp)
             ) {
                 Row(
@@ -154,20 +152,19 @@ fun HomeScreen( bottomNavHeight: Dp,transactionViewModel: TransactionViewModel) 
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(R.drawable.wallet),
                                 contentDescription = "Saldo",
-                                tint = Color(0xFF979797),
+                                tint = OptionalColor3,
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Saldo",
+                                text = stringResource(R.string.balance_home),
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF979797),
+                                color = OptionalColor3,
                             )
                         }
                         Spacer(modifier = Modifier.height(2.dp))
@@ -194,7 +191,7 @@ fun HomeScreen( bottomNavHeight: Dp,transactionViewModel: TransactionViewModel) 
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text(
-                                text = "Toko A",
+                                text = "Toko A", /*TODO: make it dynamically*/
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontSize = 14.sp,
@@ -229,7 +226,7 @@ fun HomeScreen( bottomNavHeight: Dp,transactionViewModel: TransactionViewModel) 
                             modifier = Modifier
                                 .background(Color2, RoundedCornerShape(15))
                                 .padding(14.dp, 4.dp),
-                            text = "Hari ini",
+                            text = stringResource(R.string.today_home),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Medium,
                             color = Color.White
@@ -247,7 +244,7 @@ fun HomeScreen( bottomNavHeight: Dp,transactionViewModel: TransactionViewModel) 
                                     .fillMaxHeight()
                             ) {
                                 Text(
-                                    text = "Pemasukan",
+                                    text = stringResource(R.string.income),
                                     fontSize = 14.sp,
                                     color = Color1,
                                     fontWeight = FontWeight.Medium
@@ -268,9 +265,9 @@ fun HomeScreen( bottomNavHeight: Dp,transactionViewModel: TransactionViewModel) 
                                 modifier = Modifier.widthIn(0.dp, 120.dp)
                             ) {
                                 Text(
-                                    text = "Pengeluaran",
+                                    text = stringResource(R.string.expense),
                                     fontSize = 14.sp,
-                                    color = Color5,
+                                    color = Color3,
                                     fontWeight = FontWeight.Medium
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -302,33 +299,36 @@ fun HomeTransactions(transactions: List<Transaction>, listState: LazyListState) 
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Transaksi terkini",
+            text = stringResource(R.string.latest_transaction_home),
             fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.SemiBold
         )
         Text(
             modifier = Modifier.clickable { },
-            text = "Lebih detail",
+            text = stringResource(R.string.details_home),
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
-            color = Color(0xFF979797),
+            color = OptionalColor3,
         )
+//        TextButton(onClick = { /*TODO*/ },
+    //         contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(0.dp)) {
+//            Text(
+//                text = "Lebih detail",
+//                fontSize = 12.sp,
+//                fontWeight = FontWeight.Medium,
+//                color = Color(0xFF979797),
+//            )
+//        }
     }
     LazyColumn(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp)
+            .padding(24.dp, 0.dp, 24.dp, 12.dp)
     ) {
         items(transactions) { transaction ->
             TransactionCard(transaction)
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun HomeScreenPreview() {
-//    HomeScreen()
-//}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!--    &lt;!&ndash;  Nav strings  &ndash;&gt;-->
+<!--    <string name="home_nav">Home</string>-->
+<!--    <string name="product_nav">Product</string>-->
+<!--    <string name="history_nav">History</string>-->
+<!--    <string name="report_nav">Report</string>-->
+<!--    <string name="profile_nav">Profile</string>-->
+
+<!--    &lt;!&ndash;  Home page strings  &ndash;&gt;-->
+<!--    <string name="balance_home">Balance</string>-->
+<!--    <string name="today_home">Today</string>-->
+<!--    <string name="latest_transaction_home">Latest transaction</string>-->
+<!--    <string name="details_home">More detail</string>-->
+
+<!--    &lt;!&ndash;  Global  &ndash;&gt;-->
+<!--    <string name="income">Income</string>-->
+<!--    <string name="expense">Expense</string>-->
+
+    <!--  Nav strings  -->
+    <string name="home_nav">Home</string>
+    <string name="product_nav">Produk</string>
+    <string name="history_nav">Riwayat</string>
+    <string name="report_nav">Laporan</string>
+    <string name="profile_nav">Profil</string>
+
+    <!--  Home page strings  -->
+    <string name="balance_home">Saldo</string>
+    <string name="today_home">Hari ini</string>
+    <string name="latest_transaction_home">Transaksi terkini</string>
+    <string name="details_home">Lebih detail</string>
+
+    <!--  Global  -->
+    <string name="income">Pemasukan</string>
+    <string name="expense">Pengeluaran</string>
+    <string name="search_product">Telusuri produk</string>
+
+</resources>

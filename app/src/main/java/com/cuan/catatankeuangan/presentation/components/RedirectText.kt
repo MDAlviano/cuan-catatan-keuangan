@@ -8,7 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.cuan.catatankeuangan.presentation.theme.Color3
+import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 
 @Composable
@@ -30,7 +30,7 @@ fun RedirectText(
                 onClick()
             },
             text = navText,
-            color = Color3
+            color = Color1
         )
     }
 }

@@ -14,8 +14,14 @@ import androidx.compose.ui.unit.TextUnit
 import com.cuan.catatankeuangan.presentation.theme.Typography
 
 @Composable
-fun AutoResizedText(text: String, modifier: Modifier = Modifier, fontSize: TextUnit, style: TextStyle = Typography.bodyLarge, customStyle: TextStyle) {
-    var defFontSize by remember { mutableStateOf(fontSize)}
+fun AutoResizedText(
+    text: String,
+    modifier: Modifier = Modifier,
+    fontSize: TextUnit,
+    style: TextStyle = Typography.bodyLarge,
+    customStyle: TextStyle = TextStyle.Default
+) {
+    var defFontSize by remember { mutableStateOf(fontSize) }
 
     Text(
         text = text,

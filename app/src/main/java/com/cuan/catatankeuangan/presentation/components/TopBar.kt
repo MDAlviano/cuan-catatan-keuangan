@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cuan.catatankeuangan.presentation.theme.Color4
+import com.cuan.catatankeuangan.presentation.theme.Color2
 
 @Composable
 fun TopBar(
@@ -43,13 +43,13 @@ fun TopBar(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "icon back",
             colorFilter = ColorFilter.tint(
-                color = Color4
+                color = Color2
             )
         )
         Text(
             modifier = Modifier.weight(1f),
             text = text,
-            color = Color4,
+            color = Color2,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,

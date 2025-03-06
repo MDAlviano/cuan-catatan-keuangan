@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +27,7 @@ import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.data.local.entities.TransactionType
 import com.cuan.catatankeuangan.presentation.theme.Color1
-import com.cuan.catatankeuangan.presentation.theme.Color5
+import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import com.cuan.catatankeuangan.presentation.theme.outfitFamily
 import java.text.SimpleDateFormat
@@ -38,7 +39,7 @@ fun TransactionCard(transaction: Transaction) {
     val sdf = SimpleDateFormat("HH.mm", Locale("id", "ID"))
 
     val pemasukanColor = Color1
-    val pengeluaranColor = Color5
+    val pengeluaranColor = Color3
 
     Card(
         modifier = Modifier
@@ -74,11 +75,11 @@ fun TransactionCard(transaction: Transaction) {
                 Column(verticalArrangement = Arrangement.Center) {
                     Text(
                         text = if (transaction.tipeTransaksi == TransactionType.MASUK) {
-                            "Pemasukan"
+                            stringResource(R.string.income)
                         } else {
-                            "Pengeluaran"
+                            stringResource(R.string.expense)
                         },
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(2.dp))
