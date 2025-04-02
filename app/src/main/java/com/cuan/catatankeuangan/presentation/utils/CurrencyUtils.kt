@@ -1,5 +1,8 @@
 package com.cuan.catatankeuangan.presentation.utils
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
@@ -18,4 +21,18 @@ fun formatNominal(amount: Long): String {
         groupingSeparator = '.'
     }
     return DecimalFormat("#,###", symbols).format(amount)
+}
+
+fun formatInputNominal(newValue: TextFieldValue, rawInputState: MutableState<String>): TextFieldValue {
+    val rawInput = newValue.text.filter { it.isDigit() }
+    rawInputState.value = rawInput
+
+    val formattedText = if (rawInput.isNotEmpty()) formatNominal(rawInput.toLong()) else ""
+
+    val cursorOffset = newValue.selection.start + (formattedText.length - newValue.text.length)
+
+    return newValue.copy(
+        text = formattedText,
+        selection = TextRange(cursorOffset.coerceIn(0, formattedText.length))
+    )
 }

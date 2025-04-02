@@ -5,12 +5,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class FilterViewModel : ViewModel() {
-    private val _selectedFilters = MutableStateFlow<Set<String>>(emptySet())
-    val selectedFilters = _selectedFilters.asStateFlow()
+    private val _selectedFilter = MutableStateFlow<String?>(null)
+    val selectedFilter = _selectedFilter.asStateFlow()
 
-    fun toggleFilter(filter: String) {
-        _selectedFilters.value = _selectedFilters.value.toMutableSet().apply {
-            if (contains(filter)) remove(filter) else add(filter)
-        }
+    fun selectFilter(filter: String) {
+        _selectedFilter.value = if (_selectedFilter.value == filter) null else filter
     }
 }

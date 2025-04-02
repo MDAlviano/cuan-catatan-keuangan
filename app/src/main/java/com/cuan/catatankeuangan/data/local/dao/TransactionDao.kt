@@ -25,7 +25,7 @@ interface TransactionDao {
     @Query("SELECT * FROM transaction_table ORDER BY id DESC")
     fun getAllTransaction(): LiveData<List<Transaction>>
 
-    @Query("SELECT COALESCE(SUM(total), 0) FROM transaction_table WHERE tipeTransaksi = :type")
+    @Query("SELECT COALESCE(SUM(total), 0) FROM transaction_table WHERE transactionType = :type")
     fun getTotalByType(type: TransactionType): LiveData<Long>
 
 }

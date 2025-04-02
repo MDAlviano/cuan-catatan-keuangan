@@ -1,6 +1,5 @@
 package com.cuan.catatankeuangan.presentation.screens.newtransaction
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -32,6 +31,7 @@ import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.data.local.entities.TransactionType
 import com.cuan.catatankeuangan.presentation.utils.formatNominal
 import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.utils.formatInputNominal
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @Composable
@@ -70,27 +70,14 @@ fun NewTransactionForm(
     val currentTime = System.currentTimeMillis()
 
     var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
-
-    var rawTotalAmount by remember { mutableStateOf("") }
+    val rawTotalAmount = remember { mutableStateOf("") }
     var transactionType by remember { mutableStateOf("Pemasukan") }
 
     Column(modifier = Modifier.padding(24.dp, 12.dp)) {
         OutlinedTextField(
             value = textFieldValue,
             onValueChange = { newValue ->
-                val rawInput = newValue.text.filter { it.isDigit() }
-                rawTotalAmount = rawInput
-
-                val formattedText =
-                    if (rawInput.isNotEmpty()) formatNominal(rawInput.toLong()) else ""
-
-                val cursorOffset =
-                    newValue.selection.start + (formattedText.length - newValue.text.length)
-
-                textFieldValue = newValue.copy(
-                    text = formattedText,
-                    selection = TextRange(cursorOffset.coerceIn(0, formattedText.length))
-                )
+                textFieldValue = formatInputNominal(newValue, rawTotalAmount)
             },
             label = { Text(text = "Harga") },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -105,7 +92,7 @@ fun NewTransactionForm(
         }
         Button(
             onClick = {
-                val totalAmount = rawTotalAmount.toLongOrNull() ?: 0L
+                val totalAmount = rawTotalAmount.value.toLongOrNull() ?: 0L
                 if (totalAmount == 0L) {
                     Toast.makeText(
                         context,
@@ -114,17 +101,17 @@ fun NewTransactionForm(
                     ).show()
                 } else {
                     val transaction = Transaction(
-                        id = 0, deskripsi = null,
-                        tipeTransaksi = if (transactionType == "Pemasukan") {
+                        id = 0, description = null,
+                        transactionType = if (transactionType == "Pemasukan") {
                             TransactionType.MASUK
                         } else {
                             TransactionType.KELUAR
                         },
-                        total = rawTotalAmount.toLongOrNull() ?: 0L,
+                        total = rawTotalAmount.value.toLongOrNull() ?: 0L,
                         timestamp = currentTime
                     )
                     transactionViewModel.addTransaction(transaction)
-                    rawTotalAmount = ""
+                    rawTotalAmount.value = ""
                     textFieldValue = TextFieldValue("")
 
                     onConfirm()

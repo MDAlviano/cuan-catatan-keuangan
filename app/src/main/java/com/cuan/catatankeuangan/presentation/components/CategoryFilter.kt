@@ -18,17 +18,17 @@ import com.cuan.catatankeuangan.viewmodel.FilterViewModel
 @Composable
 fun CategoryFilter(viewModel: FilterViewModel) {
 
-    val selectedFilters by viewModel.selectedFilters.collectAsState()
+    val selectedFilter by viewModel.selectedFilter.collectAsState()
 
 //    TODO: implement data set dynamically
     val filters =
-        listOf("Makanan", "Minuman", "Aksesoris", "Perkakas", "Pakaian", "Lainnya")
+        listOf("Semua", "Makanan", "Minuman", "Aksesoris", "Perkakas", "Pakaian", "Lainnya")
 
     LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         items(filters) { filter ->
             FilterChip(
-                selected = selectedFilters.contains(filter),
-                onClick = { viewModel.toggleFilter(filter) },
+                selected = filter == selectedFilter,
+                onClick = { viewModel.selectFilter(filter) },
                 label = { Text(text = filter, fontFamily = ralewayFamily) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = Color1,
@@ -36,8 +36,8 @@ fun CategoryFilter(viewModel: FilterViewModel) {
                     selectedLabelColor = Color.White
                 ),
                 border = FilterChipDefaults.filterChipBorder(
-                    enabled = !selectedFilters.contains(filter),
-                    selected = selectedFilters.contains(filter),
+                    enabled = filter !== selectedFilter,
+                    selected = filter == selectedFilter,
                     borderColor = Color1,
                 )
             )

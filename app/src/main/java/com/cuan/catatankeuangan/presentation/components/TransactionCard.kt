@@ -60,12 +60,12 @@ fun TransactionCard(transaction: Transaction) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_transaction),
                     contentDescription = "Transaksi",
-                    tint = if (transaction.tipeTransaksi == TransactionType.MASUK) {
+                    tint = if (transaction.transactionType == TransactionType.MASUK) {
                         pemasukanColor
                     } else {
                         pengeluaranColor
                     },
-                    modifier = if (transaction.tipeTransaksi == TransactionType.MASUK) {
+                    modifier = if (transaction.transactionType == TransactionType.MASUK) {
                         Modifier.rotate(0F)
                     } else {
                         Modifier.rotate(180F)
@@ -74,7 +74,7 @@ fun TransactionCard(transaction: Transaction) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(verticalArrangement = Arrangement.Center) {
                     Text(
-                        text = if (transaction.tipeTransaksi == TransactionType.MASUK) {
+                        text = if (transaction.transactionType == TransactionType.MASUK) {
                             stringResource(R.string.income)
                         } else {
                             stringResource(R.string.expense)
@@ -96,7 +96,7 @@ fun TransactionCard(transaction: Transaction) {
                 fontFamily = outfitFamily,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Light,
-                color = if (transaction.tipeTransaksi == TransactionType.MASUK) {
+                color = if (transaction.transactionType == TransactionType.MASUK) {
                     pemasukanColor
                 } else {
                     pengeluaranColor
