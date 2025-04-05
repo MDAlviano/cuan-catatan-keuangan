@@ -20,9 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -54,6 +52,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.cuan.catatankeuangan.R
+import com.cuan.catatankeuangan.presentation.components.CurrencyTextField
+import com.cuan.catatankeuangan.presentation.components.CustomTextField
 import com.cuan.catatankeuangan.presentation.components.TopBar
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
@@ -61,7 +61,6 @@ import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 import com.cuan.catatankeuangan.presentation.theme.outfitFamily
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
-import com.cuan.catatankeuangan.presentation.utils.formatInputNominal
 import com.cuan.catatankeuangan.presentation.utils.formatNominal
 
 @Composable
@@ -111,7 +110,7 @@ fun NewProduct(showDialog: Boolean, onDismiss: () -> Unit) {
 
                     ProductForm()
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.weight(1f))
 
                     Button(
                         onClick = { /*TODO*/ },
@@ -123,7 +122,7 @@ fun NewProduct(showDialog: Boolean, onDismiss: () -> Unit) {
                         contentPadding = PaddingValues(12.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 60.dp)
+                            .padding(horizontal = 60.dp, vertical = 32.dp)
                     ) {
                         Text(
                             text = "Simpan",
@@ -157,101 +156,29 @@ fun ProductForm() {
             .padding(horizontal = 24.dp)
     ) {
 
-        Text(
-            text = "Nama Produk",
-            color = Color2,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        OutlinedTextField(
-            value = productNameValue,
+        CustomTextField(
+            label = "Nama Produk",
+            fieldValue = productNameValue,
             onValueChange = { productNameValue = it },
-            placeholder = { Text(text = "Nama produk", color = OptionalColor3) },
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = OptionalColor3,
-                focusedBorderColor = Color2
-            ),
-            modifier = Modifier.fillMaxWidth()
+            hint = "Nama produk"
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        Text(
-            text = "Harga Jual (Satuan)",
-            color = Color2,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        OutlinedTextField(
-            value = sellPriceValue,
-            onValueChange = { newValue ->
-                sellPriceValue = formatInputNominal(newValue, rawTotalAmount)
-            },
-            placeholder = {
-                Text(
-                    text = "0",
-                    color = OptionalColor3,
-                    fontFamily = outfitFamily,
-                    fontSize = 18.sp
-                )
-            },
-            leadingIcon = {
-                Text(
-                    text = "Rp",
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color2
-                )
-            },
-            shape = RoundedCornerShape(12.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = OptionalColor3,
-                focusedBorderColor = Color2
-            ),
-            textStyle = TextStyle(color = Color2, fontFamily = outfitFamily, fontSize = 18.sp),
-            modifier = Modifier.fillMaxWidth()
+        CurrencyTextField(
+            label = "Harga Jual (Satuan)",
+            fieldValue = sellPriceValue,
+            rawValue = rawTotalAmount,
+            onValueChange = { sellPriceValue = it }
         )
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        Text(
-            text = "Harga Beli (Satuan)",
-            color = Color2,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        OutlinedTextField(
-            value = buyPriceValue,
-            onValueChange = { newValue ->
-                buyPriceValue = formatInputNominal(newValue, rawTotalAmount2)
-            },
-            placeholder = {
-                Text(
-                    text = "0",
-                    color = OptionalColor3,
-                    fontFamily = outfitFamily,
-                    fontSize = 18.sp
-                )
-            },
-            leadingIcon = {
-                Text(
-                    text = "Rp",
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color2
-                )
-            },
-            shape = RoundedCornerShape(12.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = OptionalColor3,
-                focusedBorderColor = Color2
-            ),
-            textStyle = TextStyle(color = Color2, fontFamily = outfitFamily, fontSize = 18.sp),
-            modifier = Modifier.fillMaxWidth()
+        CurrencyTextField(
+            label = "Harga Beli (Satuan)",
+            fieldValue = buyPriceValue,
+            rawValue = rawTotalAmount2,
+            onValueChange = { buyPriceValue = it }
         )
 
         Spacer(modifier = Modifier.height(6.dp))

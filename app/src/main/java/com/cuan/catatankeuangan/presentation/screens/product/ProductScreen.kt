@@ -141,7 +141,7 @@ fun ProductScreen(bottomNavHeight: Dp) {
                 .padding(horizontal = 24.dp)
         ) {
             Text(
-                text = "Daftar Produkk",
+                text = "Daftar Produk",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
@@ -168,7 +168,7 @@ fun ProductScreen(bottomNavHeight: Dp) {
                     focusedBorderColor = Color2,
                     cursorColor = Color2
                 ),
-                leadingIcon = { Icon(Icons.Default.Search, "test", tint = Color2) },
+                leadingIcon = { Icon(Icons.Default.Search, "Search", tint = Color2) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(elevation = 0.5.dp, shape = RoundedCornerShape(10.dp)),
