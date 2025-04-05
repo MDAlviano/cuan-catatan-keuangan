@@ -30,7 +30,7 @@ import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 
 @Composable
-fun PasswordTextFields(label: String, hint: String) {
+fun PasswordTextFields(passwordValue: String, label: String, hint: String, onPasswordChange: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,9 +38,6 @@ fun PasswordTextFields(label: String, hint: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        var password by rememberSaveable {
-            mutableStateOf("")
-        }
         var passwordVisibility by remember {
             mutableStateOf(
                 false
@@ -61,10 +58,8 @@ fun PasswordTextFields(label: String, hint: String) {
             )
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = password,
-                onValueChange = {
-                    password = it
-                },
+                value = passwordValue,
+                onValueChange = onPasswordChange,
                 placeholder = {
                     Text(
                         text = hint,

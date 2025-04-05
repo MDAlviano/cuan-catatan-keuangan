@@ -10,6 +10,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +29,8 @@ import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 
 @Composable
 fun LoginWithCodeScreen() {
+    var code by rememberSaveable { mutableStateOf("") }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -60,7 +66,7 @@ fun LoginWithCodeScreen() {
                     .weight(2f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextFields(label = "Kode 16 Karakter", hint = "ABCDEFGHI12345678")
+                TextFields(value = code, label = "Kode 16 Karakter", hint = "ABCDEFGHI12345678", onValueChange = { code = it })
                 Spacer(modifier = Modifier.height(80.dp))
                 CustomButton(
                     onClick = { /*TODO*/ },

@@ -10,6 +10,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +29,11 @@ import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 
 @Composable
 fun RegisterScreen() {
+    var name by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -61,10 +70,10 @@ fun RegisterScreen() {
                     .weight(2f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextFields(label = "Nama", hint = "Orang Cakep")
-                TextFields(label = "Email", hint = "your@example.com")
-                PasswordTextFields(label = "Password", "********")
-                PasswordTextFields(label = "Konfirmasi Password", "********")
+                TextFields(value = name, label = "Nama", hint = "Orang Cakep", onValueChange = { name = it})
+                TextFields(value = email, label = "Email", hint = "your@example.com", onValueChange = { email = it })
+                PasswordTextFields(passwordValue = password, label = "Password", hint = "********", onPasswordChange = { password = it })
+                PasswordTextFields(passwordValue = confirmPassword, label = "Konfirmasi Password", hint = "********", onPasswordChange = { confirmPassword = it })
                 Spacer(modifier = Modifier.height(24.dp))
                 CustomButton(
                     onClick = { /*TODO*/ },
