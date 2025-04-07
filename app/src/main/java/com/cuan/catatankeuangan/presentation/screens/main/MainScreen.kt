@@ -38,10 +38,26 @@ fun MainScreen(transactionViewModel: TransactionViewModel) {
     var bottomNavHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    val currentRoute = currentDestination?.route
+
+    val screens = listOf(
+        BottomBarScreen.Home,
+        BottomBarScreen.Product,
+        BottomBarScreen.History,
+        BottomBarScreen.Report,
+        BottomBarScreen.Profile
+    )
+
+    val showBottomBar = currentRoute in screens.map { it.route }
+
     Scaffold(
         bottomBar = {
-            BottomBar(navController) { height ->
-                bottomNavHeight = with(density) { height.toDp() }
+            if (showBottomBar) {
+                BottomBar(screens, navController, currentDestination) { height ->
+                    bottomNavHeight = with(density) { height.toDp() }
+                }
             }
         },
         containerColor = Color.White
@@ -55,16 +71,12 @@ fun MainScreen(transactionViewModel: TransactionViewModel) {
 }
 
 @Composable
-fun BottomBar(navController: NavHostController, onHeightChanged: (Int) -> Unit) {
-    val screens = listOf(
-        BottomBarScreen.Home,
-        BottomBarScreen.Product,
-        BottomBarScreen.History,
-        BottomBarScreen.Report,
-        BottomBarScreen.Profile
-    )
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+fun BottomBar(
+    screens: List<BottomBarScreen>,
+    navController: NavHostController,
+    currentDestination: NavDestination?,
+    onHeightChanged: (Int) -> Unit
+) {
 
     NavigationBar(
         containerColor = Color2,
