@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -37,7 +39,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
@@ -45,6 +49,7 @@ import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 
 @Composable
@@ -67,6 +72,7 @@ fun ProductCard(onClick: () -> Unit) {
             Box(
                 modifier = Modifier
                     .heightIn(0.dp, 150.dp)
+                    .widthIn(0.dp, 150.dp)
                     .fillMaxSize()
             ) {
                 Image(
@@ -190,6 +196,88 @@ fun ProductCard(onClick: () -> Unit) {
                             )
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TransactionProductCard() {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(10.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .height(200.dp)
+                .fillMaxSize()
+                .padding(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .heightIn(0.dp, 120.dp)
+                    .widthIn(0.dp, 120.dp)
+                    .fillMaxSize()
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.product1),
+                    contentDescription = "Product image",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(10))
+                )
+                Text(
+                    text = "Jumlah: 69",
+                    fontSize = 10.sp,
+                    fontFamily = outfitFamily,
+                    color = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(4.dp, 6.dp)
+                        .background(Color1, RoundedCornerShape(50))
+                        .padding(4.dp, 0.dp)
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(0.dp, 120.dp)
+                    .padding(4.dp, 4.dp, 4.dp, 4.dp)
+            ) {
+//                AutoResizedText(
+//                    text = "Sunglassessssssssss",
+//                    fontSize = 16.sp,
+//                    style = TextStyle(
+//                        fontWeight = FontWeight.SemiBold,
+//                        lineHeight = 24.sp,
+//                        fontFamily = ralewayFamily
+//                    ),
+//                    )
+                Text(
+                    text = "Sunglasses",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 24.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = formatAsCurrency(10000),
+                        fontSize = 18.sp,
+                        fontFamily = outfitFamily,
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = 34.sp
+                    )
                 }
             }
         }
