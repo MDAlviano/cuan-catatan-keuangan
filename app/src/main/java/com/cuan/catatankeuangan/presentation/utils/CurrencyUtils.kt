@@ -36,3 +36,18 @@ fun formatInputNominal(newValue: TextFieldValue, rawInputState: MutableState<Str
         selection = TextRange(cursorOffset.coerceIn(0, formattedText.length))
     )
 }
+
+fun formatAbbreviatedNominal(value: Long): String {
+    val symbols = DecimalFormatSymbols(Locale("in", "ID")).apply {
+        decimalSeparator = ','
+    }
+
+    val formatter = DecimalFormat("#.##", symbols)
+
+    return when {
+        value >= 1_000_000_000 -> "${formatter.format(value / 1_000_000_000.0)} M"
+        value >= 1_000_000 -> "${formatter.format(value / 1_000_000.0)} jt"
+        value >= 1_000 -> formatNominal(value)
+        else -> value.toString()
+    }
+}

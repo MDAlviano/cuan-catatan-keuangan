@@ -12,6 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import com.cuan.catatankeuangan.presentation.theme.Typography
+import com.cuan.catatankeuangan.presentation.utils.formatAbbreviatedNominal
 
 @Composable
 fun AutoResizedText(
@@ -25,7 +26,9 @@ fun AutoResizedText(
 
     Text(
         text = text,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
         fontSize = defFontSize,
         style = style.merge(customStyle),
         maxLines = 1,
@@ -36,5 +39,20 @@ fun AutoResizedText(
                 defFontSize *= 0.9f
             }
         }
+    )
+}
+
+@Composable
+fun AbbreviatedNominalText(
+    value: Long,
+    style: TextStyle = Typography.bodyLarge,
+    customStyle: TextStyle = TextStyle.Default
+) {
+    Text(
+        text = "Rp${formatAbbreviatedNominal(value)}",
+        style = style.merge(customStyle),
+        maxLines = 1,
+        softWrap = false,
+        overflow = TextOverflow.Clip
     )
 }

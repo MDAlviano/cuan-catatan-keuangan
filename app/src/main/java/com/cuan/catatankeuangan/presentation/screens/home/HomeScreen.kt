@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,10 +31,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -60,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Transaction
+import com.cuan.catatankeuangan.presentation.components.AbbreviatedNominalText
 import com.cuan.catatankeuangan.presentation.components.AutoResizedText
 import com.cuan.catatankeuangan.presentation.components.TransactionCard
 import com.cuan.catatankeuangan.presentation.screens.newtransaction.NewTransactionDialog
@@ -87,6 +91,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
     val customTopPadding = getCustomTopPadding(24.dp)
 
     var showDialog by remember { mutableStateOf(false) }
+    var showBalance by remember { mutableStateOf(true) }
 
     val listState = rememberLazyListState()
     var isFabVisible by remember { mutableStateOf(true) }
@@ -153,13 +158,15 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
                             Icon(
                                 painter = painterResource(R.drawable.wallet),
                                 contentDescription = "Saldo",
                                 tint = OptionalColor3,
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = stringResource(R.string.balance_home),
                                 fontSize = 15.sp,
@@ -168,14 +175,39 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                             )
                         }
                         Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = formatAsCurrency(totalSaldo),
-                            fontFamily = outfitFamily,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = Color.White
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
 
-                        )
+                            Text(
+                                text = if (showBalance) {
+                                    formatAsCurrency(totalSaldo)
+                                } else {
+                                    "Rp •••"
+                                },
+                                fontFamily = outfitFamily,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.White
+                            )
+                            IconButton(
+                                onClick = { showBalance = !showBalance },
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .padding(0.dp)
+                            ) {
+                                Icon(
+                                    painter = if (showBalance) {
+                                        painterResource(id = R.drawable.eye_slash)
+                                    } else {
+                                        painterResource(id = R.drawable.eye_open)
+                                    },
+                                    contentDescription = "Hide balance",
+                                    tint = OptionalColor3
+                                )
+                            }
+                        }
                     }
                     Button(
                         onClick = { /*TODO*/ },
@@ -241,7 +273,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                 verticalArrangement = Arrangement.SpaceEvenly,
                                 modifier = Modifier
                                     .widthIn(0.dp, 120.dp)
-                                    .fillMaxHeight()
+                                    .weight(1f)
                             ) {
                                 Text(
                                     text = stringResource(R.string.income),
@@ -250,19 +282,28 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                     fontWeight = FontWeight.Medium
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                AutoResizedText(
-                                    text = formatAsCurrency(totalPemasukan),
-                                    fontSize = 22.sp,
+                                AbbreviatedNominalText(
+                                    value = totalPemasukan,
                                     customStyle = TextStyle(
                                         fontFamily = outfitFamily,
-                                        textAlign = TextAlign.Center
-                                    ),
+                                        fontSize = 22.sp
+                                    )
                                 )
+//                                AutoResizedText(
+//                                    text = formatAsCurrency(totalPemasukan),
+//                                    fontSize = 22.sp,
+//                                    customStyle = TextStyle(
+//                                        fontFamily = outfitFamily,
+//                                        textAlign = TextAlign.Center
+//                                    ),
+//                                )
                             }
                             VerticalDivider()
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.widthIn(0.dp, 120.dp)
+                                modifier = Modifier
+                                    .widthIn(0.dp, 120.dp)
+                                    .weight(1f)
                             ) {
                                 Text(
                                     text = stringResource(R.string.expense),
@@ -271,14 +312,21 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                     fontWeight = FontWeight.Medium
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                AutoResizedText(
-                                    text = formatAsCurrency(totalPengeluaran),
-                                    fontSize = 22.sp,
+                                AbbreviatedNominalText(
+                                    value = totalPengeluaran,
                                     customStyle = TextStyle(
                                         fontFamily = outfitFamily,
-                                        textAlign = TextAlign.Center
-                                    ),
+                                        fontSize = 22.sp
+                                    )
                                 )
+//                                AutoResizedText(
+//                                    text = formatAsCurrency(totalPengeluaran),
+//                                    fontSize = 22.sp,
+//                                    customStyle = TextStyle(
+//                                        fontFamily = outfitFamily,
+//                                        textAlign = TextAlign.Center
+//                                    ),
+//                                )
                             }
                         }
                     }
@@ -311,7 +359,7 @@ fun HomeTransactions(transactions: List<Transaction>, listState: LazyListState) 
             color = OptionalColor3,
         )
 //        TextButton(onClick = { /*TODO*/ },
-    //         contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(0.dp)) {
+        //         contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(0.dp)) {
 //            Text(
 //                text = "Lebih detail",
 //                fontSize = 12.sp,
