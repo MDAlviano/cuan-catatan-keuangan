@@ -35,7 +35,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun TransactionCard(transaction: Transaction) {
+fun TransactionCard(transaction: Transaction, modifier: Modifier = Modifier) {
     val sdf = SimpleDateFormat("HH.mm", Locale("id", "ID"))
 
     val pemasukanColor = Color1
@@ -44,7 +44,7 @@ fun TransactionCard(transaction: Transaction) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp),
+            .padding(vertical = 2.dp).then(modifier),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         )

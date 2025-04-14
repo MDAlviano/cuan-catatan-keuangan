@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,7 +30,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.FloatingActionButton
@@ -64,7 +62,7 @@ import androidx.compose.ui.zIndex
 import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.presentation.components.AbbreviatedNominalText
-import com.cuan.catatankeuangan.presentation.components.AutoResizedText
+import com.cuan.catatankeuangan.presentation.components.BalanceDetailsDialog
 import com.cuan.catatankeuangan.presentation.components.TransactionCard
 import com.cuan.catatankeuangan.presentation.screens.newtransaction.NewTransactionDialog
 import com.cuan.catatankeuangan.presentation.theme.Color1
@@ -92,6 +90,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
 
     var showDialog by remember { mutableStateOf(false) }
     var showBalance by remember { mutableStateOf(true) }
+    var showBalanceDetails by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
     var isFabVisible by remember { mutableStateOf(true) }
@@ -137,6 +136,15 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                 Icon(Icons.Default.Add, contentDescription = "Tambah transaksi", tint = Color.White)
             }
         }
+
+        BalanceDetailsDialog(
+            showBalanceDetails = showBalanceDetails,
+            onDismiss = { showBalanceDetails = false },
+            text = "Hari ini",
+//            balance = formatAsCurrency(totalSaldo),
+            income = formatAsCurrency(totalPemasukan),
+            expense = formatAsCurrency(totalPengeluaran)
+        )
 
         NewTransactionDialog(
             transactionViewModel,
@@ -246,6 +254,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                         .offset(y = 50.dp)
                         .padding(20.dp, 40.dp, 20.dp, 0.dp)
                         .shadow(3.dp, RoundedCornerShape(8))
+                        .clickable { showBalanceDetails = true }
                 ) {
                     Column(
                         modifier = Modifier
@@ -281,10 +290,13 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                     color = Color1,
                                     fontWeight = FontWeight.Medium
                                 )
+
                                 Spacer(modifier = Modifier.height(4.dp))
+
                                 AbbreviatedNominalText(
                                     value = totalPemasukan,
-                                    customStyle = TextStyle(
+                                    color = Color.Black,
+                                    style = TextStyle(
                                         fontFamily = outfitFamily,
                                         fontSize = 22.sp
                                     )
@@ -314,7 +326,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                 Spacer(modifier = Modifier.height(4.dp))
                                 AbbreviatedNominalText(
                                     value = totalPengeluaran,
-                                    customStyle = TextStyle(
+                                    style = TextStyle(
                                         fontFamily = outfitFamily,
                                         fontSize = 22.sp
                                     )
@@ -339,44 +351,49 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
 
 @Composable
 fun HomeTransactions(transactions: List<Transaction>, listState: LazyListState) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(24.dp, 56.dp, 24.dp, 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(R.string.latest_transaction_home),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text(
-            modifier = Modifier.clickable { },
-            text = stringResource(R.string.details_home),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-            color = OptionalColor3,
-        )
-//        TextButton(onClick = { /*TODO*/ },
-        //         contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(0.dp)) {
-//            Text(
-//                text = "Lebih detail",
-//                fontSize = 12.sp,
-//                fontWeight = FontWeight.Medium,
-//                color = Color(0xFF979797),
-//            )
-//        }
-    }
-    LazyColumn(
-        state = listState,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(24.dp, 0.dp, 24.dp, 12.dp)
-    ) {
-        items(transactions) { transaction ->
-            TransactionCard(transaction)
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp, 56.dp, 24.dp, 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.latest_transaction_home),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = stringResource(R.string.details_home),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = OptionalColor3,
+                modifier = Modifier.clickable { }
+            )
+        }
+        if (transactions.isEmpty()) {
+            Text(
+                text = "Belum ada transaksi. Ketuk tanda + untuk menambahkan transaksi baru.",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+        } else {
+            LazyColumn(
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp, 0.dp, 24.dp, 12.dp)
+            ) {
+                items(transactions) { transaction ->
+                    TransactionCard(transaction)
+                }
+            }
         }
     }
+
 }

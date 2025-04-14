@@ -8,10 +8,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import com.cuan.catatankeuangan.presentation.theme.Typography
+import com.cuan.catatankeuangan.presentation.theme.outfitFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAbbreviatedNominal
 
 @Composable
@@ -19,8 +22,7 @@ fun AutoResizedText(
     text: String,
     modifier: Modifier = Modifier,
     fontSize: TextUnit,
-    style: TextStyle = Typography.bodyLarge,
-    customStyle: TextStyle = TextStyle.Default
+    style: TextStyle
 ) {
     var defFontSize by remember { mutableStateOf(fontSize) }
 
@@ -30,7 +32,7 @@ fun AutoResizedText(
             .fillMaxWidth()
             .then(modifier),
         fontSize = defFontSize,
-        style = style.merge(customStyle),
+        style = Typography.bodyLarge.merge(style),
         maxLines = 1,
         softWrap = false,
         overflow = TextOverflow.Clip,
@@ -45,14 +47,19 @@ fun AutoResizedText(
 @Composable
 fun AbbreviatedNominalText(
     value: Long,
-    style: TextStyle = Typography.bodyLarge,
-    customStyle: TextStyle = TextStyle.Default
+    modifier: Modifier = Modifier,
+    style: TextStyle,
+    fontFamily: FontFamily = outfitFamily,
+    color: Color = Color.Unspecified,
 ) {
     Text(
         text = "Rp${formatAbbreviatedNominal(value)}",
-        style = style.merge(customStyle),
+        style = Typography.bodyLarge.merge(style),
+        fontFamily = fontFamily,
+        color = color,
         maxLines = 1,
         softWrap = false,
-        overflow = TextOverflow.Clip
+        overflow = TextOverflow.Clip,
+        modifier = modifier
     )
 }
