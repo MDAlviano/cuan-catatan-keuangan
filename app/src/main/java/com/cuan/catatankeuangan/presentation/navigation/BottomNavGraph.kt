@@ -26,7 +26,7 @@ fun BottomNavGraph(navController: NavHostController, bottomNavHeight: Dp, transa
             ProductScreen(bottomNavHeight)
         }
         composable(route = BottomBarScreen.History.route) {
-            HistoryScreen()
+            HistoryScreen(bottomNavHeight, transactionViewModel)
         }
         composable(route = BottomBarScreen.Report.route) {
             ReportScreen()
