@@ -28,4 +28,20 @@ interface TransactionDao {
     @Query("SELECT COALESCE(SUM(total), 0) FROM transaction_table WHERE transactionType = :type")
     fun getTotalByType(type: TransactionType): LiveData<Long>
 
+    @Query(
+        """
+    SELECT * FROM transaction_table
+    WHERE date(timestamp / 1000, 'unixepoch', 'localtime') = date('now', 'localtime')
+    ORDER BY timestamp DESC 
+    """
+    )
+    fun getTodayTransactions(): LiveData<List<Transaction>>
+
+    @Query("SELECT SUM(total) FROM transaction_table WHERE transactionType = 'MASUK' AND date(timestamp / 1000, 'unixepoch', 'localtime') = date('now', 'localtime')")
+    fun getTodayPemasukan(): LiveData<Long>
+
+    @Query("SELECT SUM(total) FROM transaction_table WHERE transactionType = 'KELUAR' AND date(timestamp / 1000, 'unixepoch', 'localtime') = date('now', 'localtime')")
+    fun getTodayPengeluaran(): LiveData<Long>
+
+
 }

@@ -19,6 +19,7 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     private val transactionRepository: TransactionRepository = TransactionRepository(application)
 
     val allTransactions: LiveData<List<Transaction>> = transactionDao.getAllTransaction()
+    val todayTransactions: LiveData<List<Transaction>> = transactionDao.getTodayTransactions()
 
     fun addTransaction(transaction: Transaction) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -27,8 +28,10 @@ class TransactionViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     val totalPemasukan: LiveData<Long> = transactionRepository.getTotalPemasukan()
-
     val totalPengeluaran: LiveData<Long> = transactionRepository.getTotalPengeluaran()
+
+    val todayTotalPemasukan: LiveData<Long> = transactionRepository.getTodayPemasukan()
+    val todayTotalPengeluaran: LiveData<Long> = transactionRepository.getTodayPengeluaran()
 
     val totalSaldo: LiveData<Long> = MediatorLiveData<Long>().apply {
         var pemasukan = 0L

@@ -81,10 +81,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) {
-    val transactions by transactionViewModel.allTransactions.observeAsState(initial = emptyList())
+    val todayTransactions by transactionViewModel.todayTransactions.observeAsState(initial = emptyList())
+    val totalTodayPemasukan by transactionViewModel.todayTotalPemasukan.observeAsState(initial = 0L)
+    val totalTodayPengeluaran by transactionViewModel.todayTotalPengeluaran.observeAsState(initial = 0L)
+
     val totalSaldo by transactionViewModel.totalSaldo.observeAsState(initial = 0L)
-    val totalPemasukan by transactionViewModel.totalPemasukan.observeAsState(initial = 0L)
-    val totalPengeluaran by transactionViewModel.totalPengeluaran.observeAsState(initial = 0L)
 
     val customTopPadding = getCustomTopPadding(24.dp)
 
@@ -142,8 +143,8 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
             onDismiss = { showBalanceDetails = false },
             text = "Hari ini",
 //            balance = formatAsCurrency(totalSaldo),
-            income = formatAsCurrency(totalPemasukan),
-            expense = formatAsCurrency(totalPengeluaran)
+            income = formatAsCurrency(totalTodayPemasukan),
+            expense = formatAsCurrency(totalTodayPengeluaran)
         )
 
         NewTransactionDialog(
@@ -294,7 +295,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 AbbreviatedNominalText(
-                                    value = totalPemasukan,
+                                    value = totalTodayPemasukan,
                                     color = Color.Black,
                                     style = TextStyle(
                                         fontFamily = outfitFamily,
@@ -325,7 +326,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 AbbreviatedNominalText(
-                                    value = totalPengeluaran,
+                                    value = totalTodayPengeluaran,
                                     style = TextStyle(
                                         fontFamily = outfitFamily,
                                         fontSize = 22.sp
@@ -344,7 +345,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                     }
                 }
             }
-            HomeTransactions(transactions, listState)
+            HomeTransactions(todayTransactions, listState)
         }
     }
 }
