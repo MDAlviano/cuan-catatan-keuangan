@@ -218,7 +218,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                         CardDefaults.cardColors(containerColor = Color.Transparent)
                     },
                     border = BorderStroke(1.dp, Color1),
-                    shape = RoundedCornerShape(25),
+                    shape = RoundedCornerShape(100),
                     modifier = Modifier
                         .weight(1f)
                         .pointerInput(Unit) {
@@ -294,7 +294,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                         CardDefaults.cardColors(containerColor = Color.Transparent)
                     },
                     border = BorderStroke(1.dp, Color3),
-                    shape = RoundedCornerShape(25),
+                    shape = RoundedCornerShape(100),
                     modifier = Modifier
                         .weight(1f)
                         .pointerInput(Unit) {

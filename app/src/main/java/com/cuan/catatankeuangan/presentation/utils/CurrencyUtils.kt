@@ -24,10 +24,16 @@ fun formatNominal(amount: Long): String {
 }
 
 fun formatInputNominal(newValue: TextFieldValue, rawInputState: MutableState<String>): TextFieldValue {
-    val rawInput = newValue.text.filter { it.isDigit() }
+    val rawInput = newValue.text.filter { it.isDigit() }.take(18)
     rawInputState.value = rawInput
 
-    val formattedText = if (rawInput.isNotEmpty()) formatNominal(rawInput.toLong()) else ""
+    val formattedText = if (rawInput.isNotEmpty()) {
+        try {
+            formatNominal(rawInput.toLong())
+        } catch (e: NumberFormatException) {
+            ""
+        }
+    } else ""
 
     val cursorOffset = newValue.selection.start + (formattedText.length - newValue.text.length)
 
@@ -45,6 +51,8 @@ fun formatAbbreviatedNominal(value: Long): String {
     val formatter = DecimalFormat("#.##", symbols)
 
     return when {
+        value >= 1_000_000_000_000_000 -> "${formatter.format(value / 1_000_000_000_000_000.0)} Kd"
+        value >= 1_000_000_000_000 -> "${formatter.format(value / 1_000_000_000_000.0)} T"
         value >= 1_000_000_000 -> "${formatter.format(value / 1_000_000_000.0)} M"
         value >= 1_000_000 -> "${formatter.format(value / 1_000_000.0)} jt"
         value >= 1_000 -> formatNominal(value)
