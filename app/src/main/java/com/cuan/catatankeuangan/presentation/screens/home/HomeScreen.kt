@@ -62,6 +62,7 @@ import androidx.compose.ui.zIndex
 import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.presentation.components.AbbreviatedNominalText
+import com.cuan.catatankeuangan.presentation.components.AutoResizedText
 import com.cuan.catatankeuangan.presentation.components.BalanceDetailsDialog
 import com.cuan.catatankeuangan.presentation.components.TransactionCard
 import com.cuan.catatankeuangan.presentation.screens.newtransaction.NewTransactionDialog
@@ -82,8 +83,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) {
     val todayTransactions by transactionViewModel.todayTransactions.observeAsState(initial = emptyList())
-    val totalTodayPemasukan by transactionViewModel.todayTotalPemasukan.observeAsState(initial = 0L)
-    val totalTodayPengeluaran by transactionViewModel.todayTotalPengeluaran.observeAsState(initial = 0L)
+    val todayPemasukan by transactionViewModel.todayPemasukan.observeAsState(initial = 0L)
+    val todayPengeluaran by transactionViewModel.todayPengeluaran.observeAsState(initial = 0L)
 
     val totalSaldo by transactionViewModel.totalSaldo.observeAsState(initial = 0L)
 
@@ -142,9 +143,9 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
             showBalanceDetails = showBalanceDetails,
             onDismiss = { showBalanceDetails = false },
             text = "Hari ini",
-//            balance = formatAsCurrency(totalSaldo),
-            income = formatAsCurrency(totalTodayPemasukan),
-            expense = formatAsCurrency(totalTodayPengeluaran)
+            balance = formatAsCurrency(todayPemasukan.minus(todayPengeluaran)),
+            income = formatAsCurrency(todayPemasukan),
+            expense = formatAsCurrency(todayPengeluaran)
         )
 
         NewTransactionDialog(
@@ -166,7 +167,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(2f).padding(end = 6.dp)) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -189,16 +190,18 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
 
-                            Text(
+                            AutoResizedText(
                                 text = if (showBalance) {
                                     formatAsCurrency(totalSaldo)
                                 } else {
                                     "Rp •••"
                                 },
-                                fontFamily = outfitFamily,
                                 fontSize = 24.sp,
-                                fontWeight = FontWeight.Normal,
-                                color = Color.White
+                                style = TextStyle(
+                                    fontFamily = outfitFamily,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.White
+                                )
                             )
                             IconButton(
                                 onClick = { showBalance = !showBalance },
@@ -220,12 +223,13 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                     }
                     Button(
                         onClick = { /*TODO*/ },
-                        contentPadding = PaddingValues(12.dp, 0.dp, 4.dp, 0.dp),
+                        contentPadding = PaddingValues(4.dp, 0.dp, 4.dp, 0.dp),
                         shape = RoundedCornerShape(15),
                         colors = ButtonColors(Color2, Color.White, Color2, Color2),
                         modifier = Modifier
                             .widthIn(0.dp, 140.dp)
                             .heightIn(0.dp, 30.dp)
+                            .weight(1f)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -236,13 +240,18 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontSize = 14.sp,
+                                textAlign = TextAlign.Center,
                                 color = Color.White,
-                                modifier = Modifier.widthIn(0.dp, 120.dp)
+                                modifier = Modifier
+                                    .widthIn(0.dp, 120.dp)
+                                    .weight(2f)
                             )
                             Icon(
                                 painter = painterResource(id = R.drawable.drop_arrow_down),
                                 contentDescription = "",
-                                modifier = Modifier.width(IntrinsicSize.Max)
+                                modifier = Modifier
+                                    .width(IntrinsicSize.Max)
+                                    .weight(1f)
                             )
                         }
                     }
@@ -295,7 +304,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 AbbreviatedNominalText(
-                                    value = totalTodayPemasukan,
+                                    value = todayPemasukan,
                                     color = Color.Black,
                                     style = TextStyle(
                                         fontFamily = outfitFamily,
@@ -326,7 +335,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 AbbreviatedNominalText(
-                                    value = totalTodayPengeluaran,
+                                    value = todayPengeluaran,
                                     style = TextStyle(
                                         fontFamily = outfitFamily,
                                         fontSize = 22.sp
