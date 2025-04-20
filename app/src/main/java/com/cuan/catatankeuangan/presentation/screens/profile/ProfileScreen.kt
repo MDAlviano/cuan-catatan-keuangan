@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,11 +31,35 @@ import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun ProfileScreen(navController: NavController, bottomNavHeight: Dp) {
+    val user = FirebaseAuth.getInstance().currentUser
+    val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
+    val displayName = user?.displayName ?: "Username"
+    val email = user?.email ?: "Email"
 
     val customTopPadding = getCustomTopPadding(16.dp)
+
+    LaunchedEffect(currentUserEmail) {
+        currentUserEmail?.let {
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(it)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val name = document.getString("name") ?: ""
+                        val email = document.getString("email") ?: ""
+                        val profileUrl = document.getString("profilePictureUrl") ?: ""
+
+                        // update UI
+                    }
+                }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -57,8 +82,10 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp) {
                     .size(64.dp)
                     .clip(RoundedCornerShape(100))
             )
-            Text(text = "Username", fontWeight = FontWeight.SemiBold) // TODO: Change username dynamically
-            Text(text = "User email") // TODO: Change email dynamically
+//            Text(text = "Username", fontWeight = FontWeight.SemiBold) // TODO: Change username dynamically
+//            Text(text = "User email") // TODO: Change email dynamically
+            Text(text = displayName, fontWeight = FontWeight.SemiBold)
+            Text(text = email)
 
             Spacer(modifier = Modifier.height(16.dp))
 

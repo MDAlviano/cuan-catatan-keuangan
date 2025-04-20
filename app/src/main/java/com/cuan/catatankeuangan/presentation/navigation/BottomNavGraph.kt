@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.cuan.catatankeuangan.presentation.screens.auth.login.LoginScreen
+import com.cuan.catatankeuangan.presentation.screens.auth.register.RegisterScreen
 import com.cuan.catatankeuangan.presentation.screens.history.HistoryScreen
 import com.cuan.catatankeuangan.presentation.screens.home.HomeScreen
 import com.cuan.catatankeuangan.presentation.screens.product.ProductScreen
@@ -34,8 +35,14 @@ fun BottomNavGraph(navController: NavHostController, bottomNavHeight: Dp, transa
         composable(route = BottomBarScreen.Profile.route) {
             ProfileScreen(navController, bottomNavHeight)
         }
-        composable(route = "login") {
-            LoginScreen()
+        composable("login") {
+            LoginScreen(navController)
+        }
+        composable("register") {
+            RegisterScreen(navController)
+        }
+        composable("profile") {
+            ProfileScreen(navController, bottomNavHeight)
         }
     }
 }
