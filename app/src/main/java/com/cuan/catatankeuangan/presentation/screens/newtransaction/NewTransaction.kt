@@ -6,35 +6,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,12 +35,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -61,23 +46,19 @@ import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.data.local.entities.TransactionType
 import com.cuan.catatankeuangan.presentation.components.CurrencyTextField
 import com.cuan.catatankeuangan.presentation.components.CustomTextField
-import com.cuan.catatankeuangan.presentation.components.ProductCard
 import com.cuan.catatankeuangan.presentation.components.TopBar
 import com.cuan.catatankeuangan.presentation.components.TransactionProductCard
 import com.cuan.catatankeuangan.presentation.theme.Color1
-import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
-import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
-import com.cuan.catatankeuangan.presentation.utils.formatNominal
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
-import com.cuan.catatankeuangan.presentation.utils.formatInputNominal
+import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @Composable
 fun NewTransactionDialog(
     transactionViewModel: TransactionViewModel,
+//    productViewModel: ProductViewModel,
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
@@ -89,7 +70,6 @@ fun NewTransactionDialog(
     var selectedType by remember { mutableStateOf("Pemasukan") }
     var totalAmountField by remember { mutableStateOf(TextFieldValue("")) }
     var description by remember { mutableStateOf("") }
-    val products = listOf("Produk 1", "Produk 2")
 
     var rawTotalAmount = remember { mutableStateOf("") }
 
@@ -309,14 +289,14 @@ fun NewTransactionDialog(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            LazyRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.height(240.dp)
-                            ) {
-                                items(2) {
-                                    TransactionProductCard()
-                                }
-                            }
+//                            LazyRow(
+//                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                                modifier = Modifier.height(240.dp)
+//                            ) {
+//                                items(2) {
+//                                    TransactionProductCard()
+//                                }
+//                            }
                         }
 
                         Spacer(modifier = Modifier.weight(1f))
@@ -331,8 +311,11 @@ fun NewTransactionDialog(
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } else {
+
+                                    // Add transaction to database
                                     val transaction = Transaction(
-                                        id = 0, description = null,
+                                        id = 0,
+                                        description = description,
                                         transactionType = if (selectedType == "Pemasukan") {
                                             TransactionType.MASUK
                                         } else {

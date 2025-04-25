@@ -53,7 +53,7 @@ import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 
 @Composable
-fun ProductCard(onClick: () -> Unit) {
+fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String, stock: Int) {
 
     var actionExpanded by remember { mutableStateOf(false) }
 
@@ -84,7 +84,7 @@ fun ProductCard(onClick: () -> Unit) {
                         .clip(RoundedCornerShape(10))
                 )
                 Text(
-                    text = "Stok: 69",
+                    text = "Stok: $stock",
                     fontSize = 12.sp,
                     fontFamily = outfitFamily,
                     color = Color.White,
@@ -102,13 +102,13 @@ fun ProductCard(onClick: () -> Unit) {
                     .padding(4.dp, 4.dp, 0.dp, 0.dp)
             ) {
                 Text(
-                    text = "Sunglasses",
+                    text = name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     lineHeight = 24.sp
                 )
                 Text(
-                    text = "Aksesoris",
+                    text = category,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
                     lineHeight = 12.sp,
@@ -121,7 +121,7 @@ fun ProductCard(onClick: () -> Unit) {
                 ) {
 
                     Text(
-                        text = formatAsCurrency(10000),
+                        text = formatAsCurrency(price),
                         fontSize = 18.sp,
                         fontFamily = outfitFamily,
                         fontWeight = FontWeight.Medium,
@@ -203,7 +203,7 @@ fun ProductCard(onClick: () -> Unit) {
 }
 
 @Composable
-fun TransactionProductCard() {
+fun TransactionProductCard(name: String, price: Long, count: Int) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(10.dp),

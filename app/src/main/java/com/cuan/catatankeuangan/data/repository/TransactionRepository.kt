@@ -25,7 +25,6 @@ class TransactionRepository(context: Context) {
         return transactionDao.getTodayPengeluaran()
     }
 
-
     fun getTodayTransactions(): LiveData<List<Transaction>> {
         return transactionDao.getTodayTransactions()
     }

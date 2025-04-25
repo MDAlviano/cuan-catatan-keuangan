@@ -167,7 +167,9 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(modifier = Modifier.weight(2f).padding(end = 6.dp)) {
+                    Column(modifier = Modifier
+                        .weight(2f)
+                        .padding(end = 6.dp)) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -386,11 +388,13 @@ fun HomeTransactions(transactions: List<Transaction>, listState: LazyListState) 
             )
         }
         if (transactions.isEmpty()) {
-            Text(
-                text = "Belum ada transaksi. Ketuk tanda + untuk menambahkan transaksi baru.",
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = "Belum ada transaksi. Ketuk tanda + untuk menambahkan transaksi baru.",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 24.dp)
+                )
+            }
         } else {
             LazyColumn(
                 state = listState,

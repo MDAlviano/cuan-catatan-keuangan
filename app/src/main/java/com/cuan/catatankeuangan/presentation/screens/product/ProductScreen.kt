@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,12 +32,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -51,20 +58,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.cuan.catatankeuangan.R
+import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.components.CategoryFilter
 import com.cuan.catatankeuangan.presentation.components.DeleteProductDialog
 import com.cuan.catatankeuangan.presentation.components.ProductCard
+import com.cuan.catatankeuangan.presentation.screens.product.category.ProductCategory
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 import com.cuan.catatankeuangan.viewmodel.FilterViewModel
+import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
-fun ProductScreen(bottomNavHeight: Dp) {
+fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
+
+    val productList by productViewModel.allProducts.observeAsState(initial = emptyList())
+    var selectedProduct by remember { mutableStateOf<Product?>(null) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     val customTopPadding = getCustomTopPadding(16.dp)
 
@@ -101,6 +117,14 @@ fun ProductScreen(bottomNavHeight: Dp) {
             .background(Color(0xFFF7F7F7))
             .padding(0.dp, customTopPadding, 0.dp, bottomNavHeight),
     ) {
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .zIndex(81F)
+        )
+
         AnimatedVisibility(
             visible = isFabVisible,
             enter = fadeIn() + slideInHorizontally { it },
@@ -108,7 +132,7 @@ fun ProductScreen(bottomNavHeight: Dp) {
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
-                .zIndex(100F)
+                .zIndex(80F)
         ) {
             FloatingActionButton(
                 onClick = { showAddProductDialog = true },
@@ -120,19 +144,39 @@ fun ProductScreen(bottomNavHeight: Dp) {
         }
 
         ProductCategory(
+            productViewModel = productViewModel,
             showDialog = showCategory,
             onDismiss = { showCategory = false }
         )
 
         NewProduct(
             showDialog = showAddProductDialog,
-            onDismiss = { showAddProductDialog = false }
+            onDismiss = { showAddProductDialog = false },
+            productViewModel = productViewModel
         )
 
         DeleteProductDialog(
             showDeletePopup = showDeletePopup,
             onDismiss = { showDeletePopup = false },
-            onConfirm = { showDeletePopup = false }
+            onConfirm = {
+                selectedProduct?.let { product ->
+                    productViewModel.deleteProduct(product) {
+                        // Called if not undone
+                    }
+
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbar(
+                            message = "Produk ${product.name} dihapus",
+                            actionLabel = "Undo",
+                            duration = SnackbarDuration.Short
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            productViewModel.undoDeleteProduct()
+                        }
+                    }
+                }
+                showDeletePopup = false
+            }
         )
 
         Column(
@@ -193,19 +237,39 @@ fun ProductScreen(bottomNavHeight: Dp) {
                 CategoryFilter(viewModel = FilterViewModel())
             }
 
-            LazyVerticalGrid(
-                state = gridState,
-                columns = GridCells.Adaptive(160.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(vertical = 6.dp)
-            ) {
-                items(9) {
-                    ProductCard(onClick = { showDeletePopup = true })
+            if (productList.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "Belum ada produk. Ketuk tanda + untuk menambahkan produk baru.",
+                        textAlign = TextAlign.Center,
+//                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                }
+            } else {
+                LazyVerticalGrid(
+                    state = gridState,
+                    columns = GridCells.Adaptive(160.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(vertical = 6.dp)
+                ) {
+                    items(productList) { product ->
+                        ProductCard(
+                            onClick = {
+                                showDeletePopup = true
+                                selectedProduct = product
+                            },
+                            name = product.name,
+                            price = product.sellPrice,
+                            category = "Unspecified",
+                            stock = product.stock
+                        )
+                    }
                 }
             }
+
         }
     }
 }

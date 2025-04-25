@@ -29,11 +29,12 @@ import androidx.navigation.compose.rememberNavController
 import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 import com.cuan.catatankeuangan.presentation.navigation.BottomNavGraph
 import com.cuan.catatankeuangan.presentation.theme.Color2
+import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(transactionViewModel: TransactionViewModel) {
+fun MainScreen(transactionViewModel: TransactionViewModel, productViewModel: ProductViewModel) {
     val navController = rememberNavController()
     var bottomNavHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
@@ -65,7 +66,8 @@ fun MainScreen(transactionViewModel: TransactionViewModel) {
         BottomNavGraph(
             navController = navController,
             bottomNavHeight,
-            transactionViewModel = transactionViewModel
+            transactionViewModel = transactionViewModel,
+            productViewModel = productViewModel
         )
     }
 }
