@@ -34,6 +34,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,7 +64,12 @@ import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 @Composable
 fun ProfileScreen(navController: NavController, bottomNavHeight: Dp) {
 
+    var editProfileScreen by remember {
+        mutableStateOf(false)
+    }
     val customTopPadding = getCustomTopPadding(16.dp)
+
+    ProfileEdit(editProfileScreen = editProfileScreen, onDismiss = { editProfileScreen = false })
     Box(modifier = Modifier.fillMaxSize()) {
         Column()
         {
@@ -105,9 +114,9 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(onClick = { navController.navigate("login") }) {
-                    Text(text = "To login screen")
-                }
+//                Button(onClick = { navController.navigate("login") }) {
+//                    Text(text = "To login screen")
+//                }
                 Column(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
@@ -121,15 +130,15 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp) {
 
                     Spacer(modifier = Modifier.height(8.dp))
                     ProfileItem2(
-                        icon = painterResource(R.drawable.profile),
+                        icon = painterResource(R.drawable.profil_ini_buat_tombol_di_skrin_profil),
                         title = "Edit Profil",
-                        onClick = {/*Navigate*/ })
+                        onClick = { editProfileScreen = true})
 
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Toko", fontWeight = FontWeight.Bold)
+                    Text(text = "Toko Bakso", fontWeight = FontWeight.Bold)
                     ProfileItem2(
                         icon = painterResource(R.drawable.this_is_the_store_icon_fixed),
-                        title = "Buku Digital",
+                        title = "Buku Bakso Digital",
                         onClick = {/*Navigate*/ })
 
                     Spacer(modifier = Modifier.height(8.dp))
