@@ -38,8 +38,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -77,7 +79,12 @@ import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import java.io.File
 
 @Composable
-fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismiss: () -> Unit) {
+fun EditProduct(
+    product: Product,
+    productViewModel: ProductViewModel,
+    showDialog: Boolean,
+    onDismiss: () -> Unit
+) {
     val context = LocalContext.current
 
     val imageUri = remember { mutableStateOf<Uri?>(null) }
@@ -105,21 +112,34 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
 
         val categoryList by productViewModel.allCategories.observeAsState(emptyList())
 
+        // Form states
         var productNameValue by remember { mutableStateOf("") }
         var sellPriceValue by remember { mutableStateOf(TextFieldValue("")) }
         var buyPriceValue by remember { mutableStateOf(TextFieldValue("")) }
-        var stockValue by remember { mutableStateOf("1") }
 
         val rawTotalAmount = remember { mutableStateOf("") }
         val rawTotalAmount2 = remember { mutableStateOf("") }
-        val rawStockValue = remember { mutableStateOf("1") }
 
-        // category dropdown
+        // Category dropdown states
         var expanded by remember { mutableStateOf(false) }
         var showNewCategory by remember { mutableStateOf(false) }
 
         var selectedCategory by remember { mutableStateOf("Pilih Kategori") }
         var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
+
+        LaunchedEffect(Unit) {
+            productNameValue = product.name
+            sellPriceValue = TextFieldValue(product.sellPrice.toString())
+            buyPriceValue = TextFieldValue(product.buyPrice.toString())
+            rawTotalAmount.value = product.sellPrice.toString()
+            rawTotalAmount2.value = product.buyPrice.toString()
+
+            selectedCategoryId = product.categoryId
+            selectedCategory =
+                categoryList.find { it.id == product.categoryId }?.name ?: "Pilih Kategori"
+
+            imagePath.value = product.imageUri
+        }
 
         NewCategoryDialog(
             productViewModel = productViewModel,
@@ -140,7 +160,7 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    TopBar(onClick = onDismiss, text = "Tambah Produk")
+                    TopBar(onClick = onDismiss, text = "Edit Produk")
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -153,20 +173,29 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
                             .clickable { launcher.launch("image/*") },
                         contentAlignment = Alignment.Center
                     ) {
-                        imageUri.value?.let { uri ->
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Image(
-                                    painter = if (imageUri.value == null) {
-                                        painterResource(id = R.drawable.product1)
-                                    } else {
-                                        rememberAsyncImagePainter(
-                                            model = uri
-                                        )
-                                    },
-                                    contentDescription = "Upload image",
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxSize()
-                                )
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            val painter = when {
+                                imageUri.value != null -> {
+                                    rememberAsyncImagePainter(model = imageUri.value)
+                                }
+
+                                !product.imageUri.isNullOrEmpty() -> {
+                                    rememberAsyncImagePainter(model = File(product.imageUri!!))
+                                }
+
+                                else -> {
+                                    painterResource(id = R.drawable.product1)
+                                }
+                            }
+
+                            Image(
+                                painter = painter,
+                                contentDescription = "Upload image",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            if (imageUri.value == null && product.imageUri.isNullOrEmpty()) {
                                 Text(
                                     text = "Unggah gambar produk",
                                     fontSize = 12.sp,
@@ -174,6 +203,7 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
                                 )
                             }
                         }
+
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -274,87 +304,6 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
                         }
 
                         Spacer(modifier = Modifier.height(6.dp))
-
-                        Text(
-                            text = "Stok",
-                            color = Color2,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .width(140.dp)
-                                .border(
-                                    border = BorderStroke(1.dp, OptionalColor3),
-                                    shape = RoundedCornerShape(100)
-                                )
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    val currentStock = rawStockValue.value.toIntOrNull() ?: 0
-                                    if (currentStock > 0) {
-                                        val newStock = (currentStock - 1).toString()
-                                        rawStockValue.value = newStock
-                                        stockValue = formatNominal(newStock.toLong())
-                                    }
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(containerColor = Color1),
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .padding(4.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.rounded_horizontal_rule),
-                                    contentDescription = "Subtract",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-
-                            BasicTextField(
-                                value = stockValue,
-                                onValueChange = { newValue ->
-                                    val rawInput = newValue.filter { it.isDigit() }
-                                    rawStockValue.value = rawInput.ifEmpty { "0" }
-                                    stockValue =
-                                        formatNominal(rawStockValue.value.toLongOrNull() ?: 0)
-                                },
-                                textStyle = LocalTextStyle.current.merge(
-                                    TextStyle(
-                                        textAlign = TextAlign.Center,
-                                        fontFamily = outfitFamily,
-                                    )
-                                ),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(0.dp)
-                            )
-
-                            IconButton(
-                                onClick = {
-                                    val currentStock = rawStockValue.value.toIntOrNull() ?: 0
-                                    val newStock = (currentStock + 1).toString()
-                                    rawStockValue.value = newStock
-                                    stockValue = formatNominal(newStock.toLong())
-                                },
-                                colors = IconButtonDefaults.iconButtonColors(containerColor = Color1),
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .padding(4.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.rounded_add),
-                                    contentDescription = "Add",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-                        }
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -364,24 +313,21 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
                             val name = productNameValue.trim()
                             val sellPrice = rawTotalAmount.value.toLongOrNull() ?: 0L
                             val buyPrice = rawTotalAmount2.value.toLongOrNull() ?: 0L
-                            val stock = rawStockValue.value.toIntOrNull() ?: 1
 
                             if (name.isNotEmpty()
                                 && sellPrice != 0L
                                 && buyPrice != 0L
+                                && selectedCategoryId != null
                             ) {
-                                val newProduct = Product(
-                                    id = 0,
+                                val updatedProduct = product.copy(
                                     name = name,
                                     sellPrice = sellPrice,
                                     buyPrice = buyPrice,
-                                    stock = stock,
                                     categoryId = selectedCategoryId,
                                     imageUri = imagePath.value
                                 )
-                                productViewModel.addProduct(newProduct)
+                                productViewModel.updateProduct(updatedProduct)
                                 onDismiss()
-                                imageUri.value = null
                             } else {
                                 Toast.makeText(
                                     context,

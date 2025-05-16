@@ -23,16 +23,16 @@ fun BottomNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = BottomBarScreen.Product.route
+        startDestination = BottomBarScreen.Home.route
     ) {
         composable(route = BottomBarScreen.Home.route) {
-            HomeScreen(bottomNavHeight, transactionViewModel)
+            HomeScreen(transactionViewModel, productViewModel, bottomNavHeight, navController)
         }
         composable(route = BottomBarScreen.Product.route) {
             ProductScreen(bottomNavHeight, productViewModel)
         }
         composable(route = BottomBarScreen.History.route) {
-            HistoryScreen(bottomNavHeight, transactionViewModel)
+            HistoryScreen(bottomNavHeight, transactionViewModel, productViewModel)
         }
         composable(route = BottomBarScreen.Report.route) {
             ReportScreen()

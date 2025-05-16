@@ -1,8 +1,10 @@
 package com.cuan.catatankeuangan.data.local.entities
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
@@ -16,7 +18,8 @@ import kotlinx.parcelize.Parcelize
             childColumns = ["categoryId"],
             onDelete = ForeignKey.SET_NULL
         )
-    ]
+    ],
+    indices = [Index(value = ["categoryId"])]
 )
 data class Product(
     @PrimaryKey(autoGenerate = true) val id: Int,
@@ -25,6 +28,7 @@ data class Product(
     val sellPrice: Long,
     val stock: Int,
     val categoryId: Int? = null,
+    @ColumnInfo(name = "image_path")
     val imageUri: String? = null,
 //    val bookId: String
 ) : Parcelable

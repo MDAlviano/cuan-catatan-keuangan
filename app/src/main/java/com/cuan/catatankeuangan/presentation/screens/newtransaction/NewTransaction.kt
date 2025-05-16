@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -22,8 +21,10 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +48,6 @@ import com.cuan.catatankeuangan.data.local.entities.TransactionType
 import com.cuan.catatankeuangan.presentation.components.CurrencyTextField
 import com.cuan.catatankeuangan.presentation.components.CustomTextField
 import com.cuan.catatankeuangan.presentation.components.TopBar
-import com.cuan.catatankeuangan.presentation.components.TransactionProductCard
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
@@ -55,10 +55,11 @@ import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewTransactionDialog(
     transactionViewModel: TransactionViewModel,
-//    productViewModel: ProductViewModel,
+    productViewModel: ProductViewModel,
     showDialog: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
@@ -71,7 +72,12 @@ fun NewTransactionDialog(
     var totalAmountField by remember { mutableStateOf(TextFieldValue("")) }
     var description by remember { mutableStateOf("") }
 
-    var rawTotalAmount = remember { mutableStateOf("") }
+    val rawTotalAmount = remember { mutableStateOf("") }
+
+    var showProductSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false
+    )
 
     if (showDialog) {
         Dialog(
@@ -83,6 +89,14 @@ fun NewTransactionDialog(
                     .fillMaxSize()
                     .background(MainBgColor)
             ) {
+                if (showProductSheet) {
+                    SelectProductSheet(
+                        sheetState = sheetState,
+                        onDismiss = { showProductSheet = false },
+                        productViewModel
+                    )
+                }
+
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -237,7 +251,7 @@ fun NewTransactionDialog(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Button(
-                                    onClick = { /*TODO*/ },
+                                    onClick = { showProductSheet = true },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = Color1),
                                     modifier = Modifier.weight(1f)
@@ -352,9 +366,8 @@ fun NewTransactionDialog(
                         }
                     }
                 }
-
-
             }
         }
     }
 }
+

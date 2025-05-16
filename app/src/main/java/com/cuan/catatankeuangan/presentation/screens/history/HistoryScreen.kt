@@ -67,6 +67,7 @@ import com.cuan.catatankeuangan.presentation.theme.outfitFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 import com.cuan.catatankeuangan.presentation.utils.getDate
+import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -74,7 +75,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
-fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) {
+fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel, productViewModel: ProductViewModel) {
 
     val customTopPadding = getCustomTopPadding(16.dp)
 
@@ -150,6 +151,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
 
         NewTransactionDialog(
             transactionViewModel,
+            productViewModel,
             showDialog = showDialog,
             onDismiss = { showDialog = false },
             onConfirm = { showDialog = false }
