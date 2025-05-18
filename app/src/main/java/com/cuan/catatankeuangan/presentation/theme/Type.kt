@@ -37,23 +37,26 @@ val Typography = Typography(
         fontFamily = ralewayFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 36.sp,
+        color = Color.Black
     ),
     headlineMedium = TextStyle(
         fontFamily = ralewayFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 24.sp
+        fontSize = 24.sp,
+        color = Color.Black
     ),
     bodyLarge = TextStyle(
         fontFamily = ralewayFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
+        color = Color.Black,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     labelLarge = TextStyle(
         fontFamily = ralewayFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp
+        fontSize = 14.sp,
     ),
     labelSmall = TextStyle(
         fontFamily = ralewayFamily,

@@ -59,12 +59,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
 import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.presentation.components.AbbreviatedNominalText
 import com.cuan.catatankeuangan.presentation.components.AutoResizedText
 import com.cuan.catatankeuangan.presentation.components.BalanceDetailsDialog
 import com.cuan.catatankeuangan.presentation.components.TransactionCard
+import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 import com.cuan.catatankeuangan.presentation.screens.newtransaction.NewTransactionDialog
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
@@ -74,6 +76,7 @@ import com.cuan.catatankeuangan.presentation.theme.VerticalGradient
 import com.cuan.catatankeuangan.presentation.theme.outfitFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
+import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -81,7 +84,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) {
+fun HomeScreen(
+    transactionViewModel: TransactionViewModel,
+    productViewModel: ProductViewModel,
+    bottomNavHeight: Dp,
+    navController: NavController
+) {
     val todayTransactions by transactionViewModel.todayTransactions.observeAsState(initial = emptyList())
     val todayPemasukan by transactionViewModel.todayPemasukan.observeAsState(initial = 0L)
     val todayPengeluaran by transactionViewModel.todayPengeluaran.observeAsState(initial = 0L)
@@ -150,6 +158,7 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
 
         NewTransactionDialog(
             transactionViewModel,
+            productViewModel,
             showDialog = showDialog,
             onDismiss = { showDialog = false },
             onConfirm = { showDialog = false }
@@ -167,9 +176,11 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(modifier = Modifier
-                        .weight(2f)
-                        .padding(end = 6.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .weight(2f)
+                            .padding(end = 6.dp)
+                    ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -223,40 +234,40 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                             }
                         }
                     }
-                    Button(
-                        onClick = { /*TODO*/ },
-                        contentPadding = PaddingValues(4.dp, 0.dp, 4.dp, 0.dp),
-                        shape = RoundedCornerShape(15),
-                        colors = ButtonColors(Color2, Color.White, Color2, Color2),
-                        modifier = Modifier
-                            .widthIn(0.dp, 140.dp)
-                            .heightIn(0.dp, 30.dp)
-                            .weight(1f)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(
-                                text = "Toko A", /*TODO: make it dynamically*/
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                fontSize = 14.sp,
-                                textAlign = TextAlign.Center,
-                                color = Color.White,
-                                modifier = Modifier
-                                    .widthIn(0.dp, 120.dp)
-                                    .weight(2f)
-                            )
-                            Icon(
-                                painter = painterResource(id = R.drawable.drop_arrow_down),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .width(IntrinsicSize.Max)
-                                    .weight(1f)
-                            )
-                        }
-                    }
+//                    Button(
+//                        onClick = { /*TODO*/ },
+//                        contentPadding = PaddingValues(4.dp, 0.dp, 4.dp, 0.dp),
+//                        shape = RoundedCornerShape(15),
+//                        colors = ButtonColors(Color2, Color.White, Color2, Color2),
+//                        modifier = Modifier
+//                            .widthIn(0.dp, 140.dp)
+//                            .heightIn(0.dp, 30.dp)
+//                            .weight(1f)
+//                    ) {
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                        ) {
+//                            Text(
+//                                text = "Toko A", /*TODO: make it dynamically*/
+//                                maxLines = 1,
+//                                overflow = TextOverflow.Ellipsis,
+//                                fontSize = 14.sp,
+//                                textAlign = TextAlign.Center,
+//                                color = Color.White,
+//                                modifier = Modifier
+//                                    .widthIn(0.dp, 120.dp)
+//                                    .weight(2f)
+//                            )
+//                            Icon(
+//                                painter = painterResource(id = R.drawable.drop_arrow_down),
+//                                contentDescription = "",
+//                                modifier = Modifier
+//                                    .width(IntrinsicSize.Max)
+//                                    .weight(1f)
+//                            )
+//                        }
+//                    }
                 }
                 Box(
                     modifier = Modifier
@@ -356,13 +367,17 @@ fun HomeScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel) 
                     }
                 }
             }
-            HomeTransactions(todayTransactions, listState)
+            HomeTransactions(todayTransactions, listState, navController)
         }
     }
 }
 
 @Composable
-fun HomeTransactions(transactions: List<Transaction>, listState: LazyListState) {
+fun HomeTransactions(
+    transactions: List<Transaction>,
+    listState: LazyListState,
+    navController: NavController
+) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -384,13 +399,13 @@ fun HomeTransactions(transactions: List<Transaction>, listState: LazyListState) 
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 color = OptionalColor3,
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable { navController.navigate(BottomBarScreen.History.route) }
             )
         }
         if (transactions.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "Belum ada transaksi. Ketuk tanda + untuk menambahkan transaksi baru.",
+                    text = "Belum ada transaksi hari ini. Ketuk tanda + untuk menambahkan transaksi baru.",
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )

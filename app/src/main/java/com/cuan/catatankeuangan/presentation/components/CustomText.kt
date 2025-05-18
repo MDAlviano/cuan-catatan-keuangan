@@ -29,7 +29,6 @@ fun AutoResizedText(
     Text(
         text = text,
         modifier = Modifier
-            .fillMaxWidth()
             .then(modifier),
         fontSize = defFontSize,
         style = Typography.bodyLarge.merge(style),

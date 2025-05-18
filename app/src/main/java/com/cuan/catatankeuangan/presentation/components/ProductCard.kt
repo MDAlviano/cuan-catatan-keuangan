@@ -35,8 +35,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -45,7 +49,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
+import coil.compose.rememberAsyncImagePainter
 import com.cuan.catatankeuangan.R
+import com.cuan.catatankeuangan.data.local.entities.Category
+import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.outfitFamily
@@ -53,7 +60,12 @@ import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 
 @Composable
-fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String, stock: Int) {
+fun ProductCard(
+    product: Product,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    category: String
+) {
 
     var actionExpanded by remember { mutableStateOf(false) }
 
@@ -61,7 +73,11 @@ fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
-        modifier = Modifier
+        modifier = if (product.stock == 0) {
+            Modifier
+        } else {
+            Modifier
+        },
 //            .fillMaxHeight()
     ) {
         Column(
@@ -76,22 +92,31 @@ fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String
                     .fillMaxSize()
             ) {
                 Image(
-                    painter = painterResource(R.drawable.product1),
+                    painter = if (product.imageUri == null) {
+                        painterResource(id = R.drawable.profile)
+                    } else {
+                        rememberAsyncImagePainter(
+                            model = product.imageUri
+                        )
+                    },
                     contentDescription = "Product image",
-                    contentScale = ContentScale.Fit,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(10))
                 )
                 Text(
-                    text = "Stok: $stock",
+                    text = "Stok: ${product.stock}",
                     fontSize = 12.sp,
                     fontFamily = outfitFamily,
                     color = Color.White,
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(4.dp, 6.dp)
-                        .background(Color1, RoundedCornerShape(50))
+                        .background(
+                            if (product.stock == 0) Color3 else Color1,
+                            RoundedCornerShape(50)
+                        )
                         .padding(6.dp, 2.dp)
                 )
             }
@@ -102,10 +127,12 @@ fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String
                     .padding(4.dp, 4.dp, 0.dp, 0.dp)
             ) {
                 Text(
-                    text = name,
+                    text = product.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    lineHeight = 24.sp
+                    lineHeight = 24.sp,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = category,
@@ -121,7 +148,7 @@ fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String
                 ) {
 
                     Text(
-                        text = formatAsCurrency(price),
+                        text = formatAsCurrency(product.sellPrice),
                         fontSize = 18.sp,
                         fontFamily = outfitFamily,
                         fontWeight = FontWeight.Medium,
@@ -159,14 +186,17 @@ fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String
                                 colors = MenuDefaults.itemColors(
                                     trailingIconColor = Color.Black
                                 ),
-                                onClick = { /*TODO*/ },
+                                onClick = {
+                                    actionExpanded = false
+                                    onEditClick()
+                                },
                             )
 
                             DropdownMenuItem(
                                 trailingIcon = {
                                     Icon(
                                         Icons.Default.Refresh,
-                                        contentDescription = "Edit product",
+                                        contentDescription = "Restock product",
                                         modifier = Modifier.width(18.dp)
                                     )
                                 },
@@ -181,7 +211,7 @@ fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String
                                 trailingIcon = {
                                     Icon(
                                         Icons.Default.Delete,
-                                        contentDescription = "Edit product",
+                                        contentDescription = "Delete product",
                                         modifier = Modifier.width(18.dp)
                                     )
                                 },
@@ -191,7 +221,7 @@ fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String
                                 ),
                                 onClick = {
                                     actionExpanded = false
-                                    onClick()
+                                    onDeleteClick()
                                 },
                             )
                         }
@@ -203,7 +233,13 @@ fun ProductCard(onClick: () -> Unit, name: String, price: Long, category: String
 }
 
 @Composable
-fun TransactionProductCard(name: String, price: Long, count: Int) {
+fun TransactionProductCard(
+    name: String,
+    price: Long,
+    category: String,
+    stock: Int,
+    count: Int = 0
+) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(10.dp),
@@ -212,14 +248,12 @@ fun TransactionProductCard(name: String, price: Long, count: Int) {
         Column(
             modifier = Modifier
                 .height(200.dp)
-                .fillMaxSize()
                 .padding(12.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .heightIn(0.dp, 120.dp)
-                    .widthIn(0.dp, 120.dp)
                     .fillMaxSize()
+                    .weight(1f)
             ) {
                 Image(
                     painter = painterResource(R.drawable.product1),
@@ -230,7 +264,7 @@ fun TransactionProductCard(name: String, price: Long, count: Int) {
                         .clip(RoundedCornerShape(10))
                 )
                 Text(
-                    text = "Jumlah: 69",
+                    text = "Stok: $stock",
                     fontSize = 10.sp,
                     fontFamily = outfitFamily,
                     color = Color.White,
@@ -248,17 +282,8 @@ fun TransactionProductCard(name: String, price: Long, count: Int) {
                     .widthIn(0.dp, 120.dp)
                     .padding(4.dp, 4.dp, 4.dp, 4.dp)
             ) {
-//                AutoResizedText(
-//                    text = "Sunglassessssssssss",
-//                    fontSize = 16.sp,
-//                    style = TextStyle(
-//                        fontWeight = FontWeight.SemiBold,
-//                        lineHeight = 24.sp,
-//                        fontFamily = ralewayFamily
-//                    ),
-//                    )
                 Text(
-                    text = "Sunglasses",
+                    text = name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     lineHeight = 24.sp,
@@ -272,7 +297,7 @@ fun TransactionProductCard(name: String, price: Long, count: Int) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = formatAsCurrency(10000),
+                        text = formatAsCurrency(price),
                         fontSize = 18.sp,
                         fontFamily = outfitFamily,
                         fontWeight = FontWeight.Medium,

@@ -1,5 +1,6 @@
 package com.cuan.catatankeuangan.presentation.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.formatInputNominal
 
 
@@ -34,24 +36,29 @@ fun CustomTextField(
     hint: String,
     modifier: Modifier = Modifier
 ) {
-    Text(
-        text = label,
-        color = Color2,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 16.sp
-    )
-    Spacer(modifier = Modifier.height(2.dp))
-    OutlinedTextField(
-        value = fieldValue,
-        onValueChange = onValueChange,
-        placeholder = { Text(text = hint, color = OptionalColor3) },
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = OptionalColor3,
-            focusedBorderColor = Color2
-        ),
-        modifier = Modifier.fillMaxWidth().then(modifier)
-    )
+    Column {
+        Text(
+            text = label,
+            color = Color2,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = ralewayFamily,
+            fontSize = 16.sp
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        OutlinedTextField(
+            value = fieldValue,
+            onValueChange = onValueChange,
+            placeholder = { Text(text = hint, color = OptionalColor3) },
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = OptionalColor3,
+                focusedBorderColor = Color2
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(modifier)
+        )
+    }
 }
 
 @Composable
@@ -62,48 +69,53 @@ fun CurrencyTextField(
     onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Text(
-        text = label,
-        color = Color2,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 16.sp
-    )
-    OutlinedTextField(
-        value = fieldValue,
-        onValueChange = { newValue ->
-            onValueChange(formatInputNominal(newValue, rawValue))
-        },
-        placeholder = {
-            Text(
-                text = "0",
-                color = OptionalColor3,
-                fontFamily = outfitFamily,
-                fontSize = 18.sp
-            )
-        },
-        leadingIcon = {
-            Text(
-                text = "Rp",
-                fontWeight = FontWeight.SemiBold,
-                color = Color2
-            )
-        },
-        shape = RoundedCornerShape(12.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = OptionalColor3,
-            focusedBorderColor = Color2
-        ),
-        textStyle = TextStyle(color = Color2, fontFamily = outfitFamily, fontSize = 18.sp),
-        modifier = Modifier.fillMaxWidth().then(modifier)
-    )
-    if (rawValue.value.length >= 18) {
+    Column {
         Text(
-            text = "Nilai terlalu besar",
-            color = Color.Red,
-            fontSize = 12.sp,
-            modifier = Modifier.padding(top = 4.dp)
+            text = label,
+            color = Color2,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp
         )
+        Spacer(modifier = Modifier.height(4.dp))
+        OutlinedTextField(
+            value = fieldValue,
+            onValueChange = { newValue ->
+                onValueChange(formatInputNominal(newValue, rawValue))
+            },
+            placeholder = {
+                Text(
+                    text = "0",
+                    color = OptionalColor3,
+                    fontFamily = outfitFamily,
+                    fontSize = 18.sp
+                )
+            },
+            leadingIcon = {
+                Text(
+                    text = "Rp",
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color2
+                )
+            },
+            shape = RoundedCornerShape(12.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = OptionalColor3,
+                focusedBorderColor = Color2
+            ),
+            textStyle = TextStyle(color = Color2, fontFamily = outfitFamily, fontSize = 18.sp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(modifier)
+        )
+        if (rawValue.value.length >= 18) {
+            Text(
+                text = "Nilai terlalu besar",
+                color = Color.Red,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
     }
 }
 
