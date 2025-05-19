@@ -1,18 +1,26 @@
 package com.cuan.catatankeuangan.data.local.database
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.cuan.catatankeuangan.data.local.dao.ProductDao
 import com.cuan.catatankeuangan.data.local.dao.TransactionDao
+import com.cuan.catatankeuangan.data.local.entities.Category
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.data.local.entities.Transaction
 
 @Database(
-    entities = [Transaction::class, Product::class],
+    entities = [Transaction::class, Product::class, Category::class],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
+//    autoMigrations = [
+//        AutoMigration(
+//            from = 1,
+//            to = 2,
+//        )
+//    ]
 )
 abstract class MainDatabase : RoomDatabase() {
 
@@ -28,7 +36,7 @@ abstract class MainDatabase : RoomDatabase() {
             if (tempInstance != null) {
                 return tempInstance
             }
-            synchronized(this){
+            synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     MainDatabase::class.java,

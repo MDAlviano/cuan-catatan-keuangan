@@ -1,4 +1,4 @@
-package com.cuan.catatankeuangan.ui.theme
+package com.cuan.catatankeuangan.presentation.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -8,12 +8,17 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.cuan.catatankeuangan.ui.theme.Pink40
+import com.cuan.catatankeuangan.ui.theme.Purple40
+import com.cuan.catatankeuangan.ui.theme.PurpleGrey40
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = Color.Green,
+    secondary = Color.Red,
+    tertiary = Color.Blue,
+    background = Color.Black
 )
 
 private val LightColorScheme = lightColorScheme(

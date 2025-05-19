@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 
 @Composable
-fun TextFields(label: String, hint: String) {
+fun TextFields(value: String, label: String, hint: String, onValueChange: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -27,9 +27,6 @@ fun TextFields(label: String, hint: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        var text by remember {
-            mutableStateOf("")
-        }
         Column {
             Text(
                 modifier = Modifier.padding(bottom = 5.dp),
@@ -39,10 +36,8 @@ fun TextFields(label: String, hint: String) {
             )
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = text,
-                onValueChange = { newText ->
-                    text = newText
-                },
+                value = value,
+                onValueChange = onValueChange,
                 placeholder = {
                     Text(
                         text = hint,

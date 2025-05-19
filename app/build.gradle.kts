@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -95,5 +96,8 @@ dependencies {
     // Navigation Compose
     val nav_version = "2.8.5"
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    // COIL (image loader)
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
 }

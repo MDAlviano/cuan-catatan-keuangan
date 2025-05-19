@@ -1,45 +1,54 @@
 package com.cuan.catatankeuangan.presentation.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.cuan.catatankeuangan.R
 
 sealed class BottomBarScreen(
     val route: String,
-    val title: String,
-    val icon: ImageVector
+    val icon: Int,
+    val activeIcon: Int
 ) {
+
+    @Composable
+    fun getTitle(): String {
+        return stringResource(id = when (this) {
+            Home -> R.string.home_nav
+            Product -> R.string.product_nav
+            History -> R.string.history_nav
+            Report -> R.string.report_nav
+            Profile -> R.string.profile_nav
+        })
+    }
+
     object Home : BottomBarScreen(
         route = "home",
-        title = "Home",
-        icon = Icons.Default.Home
+        icon = R.drawable.home,
+        activeIcon = R.drawable.home_filled
     )
 
     object Product : BottomBarScreen(
         route = "product",
-        title = "Product",
-        icon = Icons.Default.Home
+        icon = R.drawable.shop,
+        activeIcon = R.drawable.shop_filled
     )
 
     object History : BottomBarScreen(
         route = "history",
-        title = "History",
-        icon = Icons.Default.AccountBox
+        icon = R.drawable.wallet2,
+        activeIcon = R.drawable.wallet2_filled
     )
 
     object Report : BottomBarScreen(
         route = "report",
-        title = "Report",
-        icon = Icons.Default.Share
+        icon = R.drawable.status,
+        activeIcon = R.drawable.status_filled
     )
 
     object Profile : BottomBarScreen(
         route = "profile",
-        title = "Profile",
-        icon = Icons.Default.Person
+        icon = R.drawable.profile,
+        activeIcon = R.drawable.profile_filled
     )
 
 }
