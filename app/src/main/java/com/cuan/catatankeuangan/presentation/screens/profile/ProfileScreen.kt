@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.cuan.catatankeuangan.R
+import com.cuan.catatankeuangan.presentation.screens.books.DigitalBookBookList
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
@@ -67,8 +68,10 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp) {
     var editProfileScreen by remember {
         mutableStateOf(false)
     }
+    var digimon by remember {mutableStateOf(false)}
     val customTopPadding = getCustomTopPadding(16.dp)
 
+    DigitalBookBookList(digimon = digimon, onDismiss = { digimon = false})
     ProfileEdit(editProfileScreen = editProfileScreen, onDismiss = { editProfileScreen = false })
     Box(modifier = Modifier.fillMaxSize()) {
         Column()
@@ -107,7 +110,7 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp) {
                     fontWeight = FontWeight.SemiBold
                 ) // TODO: Change username dynamically
                 Text(
-                    text = "cuancuandancyonyacyonya@cuan.Com",
+                    text = "Kevin@cuan.Com",
                     fontSize = 12.sp,
                     modifier = Modifier.offset(-3.dp)
                 ) // TODO: Change email dynamically
@@ -135,11 +138,11 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp) {
                         onClick = { editProfileScreen = true})
 
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Toko Bakso", fontWeight = FontWeight.Bold)
+                    Text(text = "Ea Nasir", fontWeight = FontWeight.Bold)
                     ProfileItem2(
                         icon = painterResource(R.drawable.this_is_the_store_icon_fixed),
-                        title = "Buku Bakso Digital",
-                        onClick = {/*Navigate*/ })
+                        title = "Buku Penjualan Tembaga Ea Nasir",
+                        onClick = {digimon = true})
 
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
