@@ -1,6 +1,9 @@
 package com.cuan.catatankeuangan.presentation.screens.product
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,6 +63,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
 import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.components.CurrencyTextField
@@ -70,7 +77,7 @@ import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.formatNominal
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
@@ -83,21 +90,49 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
     val imageUri = remember { mutableStateOf<Uri?>(null) }
     val imagePath = remember { mutableStateOf<String?>(null) }
 
+    Log.i("uri", imageUri.value.toString())
+
+    val cropImageLauncher = rememberLauncherForActivityResult(
+        contract = CropImageContract()
+    ) { result ->
+        if (result.isSuccessful) {
+            val croppedUri = result.uriContent
+            imageUri.value = croppedUri
+
+            // Compress image and saving to local
+            croppedUri?.let { uri ->
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val file = File(context.filesDir, "product_${System.currentTimeMillis()}.jpg")
+
+                inputStream?.use { input ->
+                    val bitmap = BitmapFactory.decodeStream(input)
+                    file.outputStream().use { output ->
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, output) // 60% quality
+                    }
+                }
+
+                imagePath.value = file.absolutePath
+            }
+        } else {
+            Log.e("Cropper", "Failed to crop: ${result.error}")
+        }
+    }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            imageUri.value = it
-
-            val inputStream = context.contentResolver.openInputStream(uri)
-            val file = File(context.filesDir, "product_${System.currentTimeMillis()}.jpg")
-            inputStream?.use { input ->
-                file.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-
-            imagePath.value = file.absolutePath
+            cropImageLauncher.launch(
+                CropImageContractOptions(
+                    uri,
+                    CropImageOptions().apply {
+                        aspectRatioX = 1
+                        aspectRatioY = 1
+                        fixAspectRatio = true
+                        guidelines = CropImageView.Guidelines.ON
+                    }
+                )
+            )
         }
     }
 
@@ -128,7 +163,10 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
         )
 
         Dialog(
-            onDismissRequest = onDismiss,
+            onDismissRequest = {
+                onDismiss()
+                imageUri.value = null
+            },
             properties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
             Box(
@@ -153,24 +191,31 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
                             .clickable { launcher.launch("image/*") },
                         contentAlignment = Alignment.Center
                     ) {
-                        imageUri.value?.let { uri ->
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Image(
-                                    painter = if (imageUri.value == null) {
-                                        painterResource(id = R.drawable.product1)
-                                    } else {
-                                        rememberAsyncImagePainter(
-                                            model = uri
-                                        )
-                                    },
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            if (imageUri.value == null) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.image_upload),
                                     contentDescription = "Upload image",
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxSize()
+                                    tint = OptionalColor3
                                 )
                                 Text(
                                     text = "Unggah gambar produk",
                                     fontSize = 12.sp,
                                     color = OptionalColor3
+                                )
+                            } else {
+
+                                Image(
+                                    painter = if (imageUri.value == null) {
+                                        painterResource(id = R.drawable.image_upload)
+                                    } else {
+                                        rememberAsyncImagePainter(
+                                            model = imageUri.value
+                                        )
+                                    },
+                                    contentDescription = "Upload image",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
                         }
@@ -325,7 +370,7 @@ fun NewProduct(productViewModel: ProductViewModel, showDialog: Boolean, onDismis
                                 textStyle = LocalTextStyle.current.merge(
                                     TextStyle(
                                         textAlign = TextAlign.Center,
-                                        fontFamily = outfitFamily,
+                                        fontFamily = interFamily,
                                     )
                                 ),
                                 singleLine = true,

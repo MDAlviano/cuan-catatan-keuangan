@@ -63,7 +63,7 @@ import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 import com.cuan.catatankeuangan.presentation.utils.getDate
@@ -198,7 +198,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                     text = formatAsCurrency(totalSaldo),
                     fontSize = 18.sp,
                     style = TextStyle(
-                        fontFamily = outfitFamily,
+                        fontFamily = interFamily,
                         textAlign = TextAlign.End
                     ),
                     modifier = Modifier
@@ -381,7 +381,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                                 text = date,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 14.sp,
-                                fontFamily = outfitFamily,
+                                fontFamily = interFamily,
                                 color = Color.Black,
                                 modifier = Modifier.padding(vertical = 4.dp)
                             )

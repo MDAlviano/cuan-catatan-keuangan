@@ -1,5 +1,6 @@
 package com.cuan.catatankeuangan.presentation.screens.product.category
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,16 +25,16 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -46,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,26 +58,24 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
 import com.cuan.catatankeuangan.R
-import com.cuan.catatankeuangan.data.local.entities.Category
 import com.cuan.catatankeuangan.data.local.entities.CategoryWithProducts
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.components.TopBar
+import com.cuan.catatankeuangan.presentation.components.WarningDialog
 import com.cuan.catatankeuangan.presentation.theme.Color1
-import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
-import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAbbreviatedNominal
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductCategory(
     productViewModel: ProductViewModel,
     showDialog: Boolean,
     onDismiss: () -> Unit
 ) {
-
     val categories by productViewModel.allCategoryWithProducts.observeAsState(initial = emptyList())
     var selectedCategory by remember { mutableStateOf<CategoryWithProducts?>(null) }
 
@@ -83,8 +83,12 @@ fun ProductCategory(
     var showEditCategory by remember { mutableStateOf(false) }
     var showDeleteCategory by remember { mutableStateOf(false) }
 
-    if (showDialog) {
+    var showProductSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false
+    )
 
+    if (showDialog) {
         NewCategoryDialog(
             productViewModel = productViewModel,
             showDialog = showNewCategory,
@@ -101,11 +105,16 @@ fun ProductCategory(
         }
 
         selectedCategory?.let {
-            DeleteCategoryDialog(
-                category = it,
-                productViewModel = productViewModel,
+            WarningDialog(
                 showDialog = showDeleteCategory,
-                onDismiss = { showDeleteCategory = false }
+                onDismiss = { showDeleteCategory = false },
+                onConfirm = {
+                    productViewModel.deleteCategory(selectedCategory!!.category)
+                    showDeleteCategory = false
+                },
+                headerText = "Hapus Kategori",
+                bodyText = "Apakah Anda yakin ingin menghapus kategori ${selectedCategory!!.category.name}",
+                confirmText = "Hapus"
             )
         }
 
@@ -118,6 +127,13 @@ fun ProductCategory(
                     .fillMaxSize()
                     .background(MainBgColor)
             ) {
+                CategorySelectProductSheet(
+                    showSheet = showProductSheet,
+                    sheetState = sheetState,
+                    onDismiss = { showProductSheet = false },
+                    productViewModel = productViewModel,
+                    categoryId = selectedCategory?.category?.id
+                )
                 Column {
                     TopBar(onClick = onDismiss, text = "Kategori")
 
@@ -140,6 +156,7 @@ fun ProductCategory(
                             items(categories) { category ->
                                 CategoryItem(
                                     category,
+                                    productViewModel,
                                     onEditClick = {
                                         showEditCategory = true
                                         selectedCategory = category
@@ -147,11 +164,14 @@ fun ProductCategory(
                                     onDeleteClick = {
                                         showDeleteCategory = true
                                         selectedCategory = category
+                                    },
+                                    onAddClick = {
+                                        showProductSheet = true
+                                        selectedCategory = category
                                     }
                                 )
                             }
                         }
-
 
                         item {
                             Card(
@@ -200,9 +220,13 @@ fun ProductCategory(
 @Composable
 fun CategoryItem(
     category: CategoryWithProducts,
+    productViewModel: ProductViewModel,
     onEditClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit, // delete category
+    onAddClick: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     var expanded by remember { mutableStateOf(false) }
 
     val conditionalColor = if (expanded) Color1 else Color.White
@@ -246,7 +270,7 @@ fun CategoryItem(
                 Text(
                     text = formatAbbreviatedNominal(category.products.size.toLong()),
                     fontSize = 16.sp,
-                    fontFamily = outfitFamily,
+                    fontFamily = interFamily,
                     color = conditionalColor2,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
@@ -269,7 +293,17 @@ fun CategoryItem(
             ) {
                 if (category.products.isNotEmpty()) {
                     category.products.forEach { product ->
-                        CategorizedProductItem(product)
+                        CategorizedProductItem(
+                            product,
+                            onDelete = {
+                                productViewModel.removeProductFromCategory(product.id)
+
+                                Toast.makeText(
+                                    context,
+                                    "Produk berhasil dihapus dari kategori.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            })
                     }
                 } else {
                     Card(
@@ -301,7 +335,7 @@ fun CategoryItem(
                     shape = RoundedCornerShape(bottomStart = 25f, bottomEnd = 25f),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { }
+                        .clickable { onAddClick() }
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
@@ -391,7 +425,7 @@ fun CategoryItem(
 }
 
 @Composable
-fun CategorizedProductItem(product: Product) {
+fun CategorizedProductItem(product: Product, onDelete: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
@@ -428,7 +462,9 @@ fun CategorizedProductItem(product: Product) {
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(
+                onClick = onDelete
+            ) {
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = "Delete product from category",

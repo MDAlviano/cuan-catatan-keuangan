@@ -3,6 +3,7 @@ package com.cuan.catatankeuangan.presentation.screens.main
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -84,6 +85,7 @@ fun BottomBar(
         containerColor = Color2,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(top = 22.dp)
             .onSizeChanged { size -> onHeightChanged(size.height) }
 //            .padding(horizontal = 24.dp)
     ) {

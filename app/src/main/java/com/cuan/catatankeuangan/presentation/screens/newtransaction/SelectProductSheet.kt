@@ -167,11 +167,9 @@ fun SelectProductSheet(
                 ) {
                     items(filteredProducts) { product ->
                         TransactionProductCard(
-//                            onClick = { /*TODO*/ },
-                            name = product.name,
-                            price = product.sellPrice,
+                            product = product,
+                            onClick = { /*TODO*/ },
                             category = "",
-                            stock = product.stock
                         )
                     }
                 }

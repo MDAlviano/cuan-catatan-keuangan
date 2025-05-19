@@ -11,17 +11,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -65,8 +60,8 @@ import androidx.compose.ui.zIndex
 import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.components.CategoryFilter
-import com.cuan.catatankeuangan.presentation.components.DeleteProductDialog
 import com.cuan.catatankeuangan.presentation.components.ProductCard
+import com.cuan.catatankeuangan.presentation.components.WarningDialog
 import com.cuan.catatankeuangan.presentation.screens.product.category.ProductCategory
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
@@ -86,18 +81,19 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
     val categoryList by productViewModel.allCategories.observeAsState(initial = emptyList())
     var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
 
-    val filteredProducts = if (selectedCategoryId == null) {
-        productList
-    } else {
-        productList.filter { it.categoryId == selectedCategoryId }
+    var textFieldValue by remember { mutableStateOf("") }
+
+    val filteredProducts = productList.filter { product ->
+        val matchesCategory = selectedCategoryId == null || product.categoryId == selectedCategoryId
+        val matchesSearch =
+            textFieldValue.isBlank() || product.name.contains(textFieldValue, ignoreCase = true)
+        matchesCategory && matchesSearch
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     val customTopPadding = getCustomTopPadding(16.dp)
-
-    var textFieldValue by remember { mutableStateOf("") }
 
     var showCategory by remember { mutableStateOf(false) }
     var showAddProductDialog by remember { mutableStateOf(false) }
@@ -109,7 +105,6 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
 
     val bookType = "bisnis"
 
-//    if (bookType == "bisnis") {
     // Hide fab when scrolling
     LaunchedEffect(gridState) {
         var job: Job? = null
@@ -132,7 +127,7 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFFF7F7F7))
-            .padding(0.dp, customTopPadding, 0.dp, bottomNavHeight),
+            .padding(0.dp, customTopPadding, 0.dp, bottomNavHeight)
     ) {
 
         SnackbarHost(
@@ -142,6 +137,7 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
                 .zIndex(81F)
         )
 
+        // FAB (add new product)
         if (bookType == "bisnis") {
             AnimatedVisibility(
                 visible = isFabVisible,
@@ -166,18 +162,21 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
             }
         }
 
+        // Product category screen
         ProductCategory(
             productViewModel = productViewModel,
             showDialog = showCategory,
             onDismiss = { showCategory = false }
         )
 
+        // New product dialog
         NewProduct(
             showDialog = showAddProductDialog,
             onDismiss = { showAddProductDialog = false },
             productViewModel = productViewModel
         )
 
+        // Edit product dialog
         selectedProduct?.let {
             EditProduct(
                 product = it,
@@ -186,9 +185,13 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
                 onDismiss = { showEditProductDialog = false })
         }
 
-        DeleteProductDialog(
-            showDeletePopup = showDeletePopup,
-            onDismiss = { showDeletePopup = false },
+        // Delete product warning
+        WarningDialog(
+            showDialog = showDeletePopup,
+            onDismiss = {
+                showDeletePopup = false
+                selectedProduct = null
+            },
             onConfirm = {
                 selectedProduct?.let { product ->
                     productViewModel.deleteProduct(product) {
@@ -207,9 +210,13 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
                     }
                 }
                 showDeletePopup = false
-            }
+            },
+            headerText = "Hapus Produk",
+            bodyText = "Apakah Anda yakin ingin menghapus produk ${selectedProduct?.name}?",
+            confirmText = "Hapus"
         )
 
+        // Product Screen
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -272,7 +279,9 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
                     CategoryFilter(
                         categories = categoryList,
                         selectedCategoryId = selectedCategoryId,
-                        onCategorySelected = { selectedCategoryId = it}
+                        onCategorySelected = {
+                            selectedCategoryId = it
+                        }
                     )
                 }
 

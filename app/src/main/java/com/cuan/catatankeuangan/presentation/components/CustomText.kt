@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import com.cuan.catatankeuangan.presentation.theme.Typography
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAbbreviatedNominal
 
 @Composable
@@ -48,7 +48,7 @@ fun AbbreviatedNominalText(
     value: Long,
     modifier: Modifier = Modifier,
     style: TextStyle,
-    fontFamily: FontFamily = outfitFamily,
+    fontFamily: FontFamily = interFamily,
     color: Color = Color.Unspecified,
 ) {
     Text(

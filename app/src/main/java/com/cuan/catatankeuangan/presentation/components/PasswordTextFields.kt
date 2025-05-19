@@ -45,9 +45,9 @@ fun PasswordTextFields(passwordValue: String, label: String, hint: String, onPas
         }
 
         val icon = if (passwordVisibility)
-            painterResource(id = R.drawable.open_eye)
+            painterResource(id = R.drawable.eye_open)
         else
-            painterResource(id = R.drawable.open_eye)
+            painterResource(id = R.drawable.eye_slash)
 
         Column {
             Text(

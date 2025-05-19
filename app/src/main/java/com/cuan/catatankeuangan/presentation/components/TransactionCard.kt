@@ -29,7 +29,7 @@ import com.cuan.catatankeuangan.data.local.entities.TransactionType
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -85,7 +85,7 @@ fun TransactionCard(transaction: Transaction, modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = sdf.format(Date(transaction.timestamp)),
-                        fontFamily = outfitFamily,
+                        fontFamily = interFamily,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Light,
                     )
@@ -93,7 +93,7 @@ fun TransactionCard(transaction: Transaction, modifier: Modifier = Modifier) {
             }
             Text(
                 text = formatAsCurrency(transaction.total),
-                fontFamily = outfitFamily,
+                fontFamily = interFamily,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Light,
                 color = if (transaction.transactionType == TransactionType.MASUK) {

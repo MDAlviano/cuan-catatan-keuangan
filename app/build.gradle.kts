@@ -100,4 +100,7 @@ dependencies {
     // COIL (image loader)
     implementation("io.coil-kt:coil-compose:2.4.0")
 
+    // Image cropper
+    implementation("com.vanniktech:android-image-cropper:4.6.0")
+
 }
