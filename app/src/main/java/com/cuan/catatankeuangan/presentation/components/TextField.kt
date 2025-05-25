@@ -26,8 +26,6 @@ import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.formatInputNominal
 
-
-// iya saya tau ini dobel tapi yaudah lah ya hehe
 @Composable
 fun CustomTextField(
     label: String,
@@ -109,6 +107,7 @@ fun CurrencyTextField(
                 focusedBorderColor = Color2
             ),
             textStyle = TextStyle(color = Color2, fontFamily = interFamily, fontSize = 18.sp),
+            maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
                 .then(modifier)

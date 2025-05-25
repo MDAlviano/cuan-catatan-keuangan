@@ -72,7 +72,7 @@ import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.components.CurrencyTextField
 import com.cuan.catatankeuangan.presentation.components.CustomTextField
 import com.cuan.catatankeuangan.presentation.components.TopBar
-import com.cuan.catatankeuangan.presentation.screens.product.category.NewCategoryDialog
+import com.cuan.catatankeuangan.presentation.screens.category.NewCategoryDialog
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor

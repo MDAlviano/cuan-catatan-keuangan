@@ -1,6 +1,5 @@
-package com.cuan.catatankeuangan.presentation.screens.product.category
+package com.cuan.catatankeuangan.presentation.screens.category
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

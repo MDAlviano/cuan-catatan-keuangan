@@ -1,4 +1,4 @@
-package com.cuan.catatankeuangan.presentation.screens.product.category
+package com.cuan.catatankeuangan.presentation.screens.category
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke

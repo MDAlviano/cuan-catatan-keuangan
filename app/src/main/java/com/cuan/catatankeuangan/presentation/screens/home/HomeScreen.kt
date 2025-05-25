@@ -61,6 +61,7 @@ import com.cuan.catatankeuangan.presentation.components.AutoResizedText
 import com.cuan.catatankeuangan.presentation.components.BalanceDetailsDialog
 import com.cuan.catatankeuangan.presentation.components.TransactionCard
 import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
+import com.cuan.catatankeuangan.presentation.screens.transactiondetails.TransactionDetails
 import com.cuan.catatankeuangan.presentation.screens.newtransaction.NewTransactionDialog
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
@@ -92,9 +93,12 @@ fun HomeScreen(
 
     val customTopPadding = getCustomTopPadding(24.dp)
 
-    var showDialog by remember { mutableStateOf(false) }
+    var showNewTransaction by remember { mutableStateOf(false) }
     var showBalance by remember { mutableStateOf(true) }
     var showBalanceDetails by remember { mutableStateOf(false) }
+    var showTransactionDetails by remember { mutableStateOf(false) }
+
+    var selectedTransaction by remember { mutableStateOf<Transaction?>(null) }
 
     val listState = rememberLazyListState()
     var isFabVisible by remember { mutableStateOf(true) }
@@ -133,7 +137,7 @@ fun HomeScreen(
                 .zIndex(100F)
         ) {
             FloatingActionButton(
-                onClick = { showDialog = true },
+                onClick = { showNewTransaction = true },
                 containerColor = Color2,
                 shape = RoundedCornerShape(20)
             ) {
@@ -153,10 +157,19 @@ fun HomeScreen(
         NewTransactionDialog(
             transactionViewModel,
             productViewModel,
-            showDialog = showDialog,
-            onDismiss = { showDialog = false },
-            onConfirm = { showDialog = false }
+            showDialog = showNewTransaction,
+            onDismiss = { showNewTransaction = false },
+            onConfirm = { showNewTransaction = false }
         )
+
+        selectedTransaction?.let {
+            TransactionDetails(
+                transactionViewModel = transactionViewModel,
+                transaction = it,
+                showDialog = showTransactionDetails,
+                onDismiss = { showTransactionDetails = false }
+            )
+        }
 
         Column() {
             Box(
@@ -361,7 +374,63 @@ fun HomeScreen(
                     }
                 }
             }
-            HomeTransactions(todayTransactions, listState, navController)
+//            HomeTransactions(
+//                transactions = todayTransactions,
+//                listState = listState,
+//                navController = navController,
+//                onItemClicked = {
+//                    showTransactionDetails = true
+////                    selectedTransaction =
+//                })
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp, 56.dp, 24.dp, 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.latest_transaction_home),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = stringResource(R.string.details_home),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = OptionalColor3,
+                        modifier = Modifier.clickable { navController.navigate(BottomBarScreen.History.route) }
+                    )
+                }
+                if (todayTransactions.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Belum ada transaksi hari ini. Ketuk tanda + untuk menambahkan transaksi baru.",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 24.dp)
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        state = listState,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp, 0.dp, 24.dp, 12.dp)
+                    ) {
+                        items(todayTransactions) { transaction ->
+                            TransactionCard(transaction, onClick = {
+                                showTransactionDetails = true
+                                selectedTransaction = transaction
+                            })
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -370,53 +439,9 @@ fun HomeScreen(
 fun HomeTransactions(
     transactions: List<Transaction>,
     listState: LazyListState,
-    navController: NavController
+    navController: NavController,
+    onItemClicked: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp, 56.dp, 24.dp, 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.latest_transaction_home),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = stringResource(R.string.details_home),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                color = OptionalColor3,
-                modifier = Modifier.clickable { navController.navigate(BottomBarScreen.History.route) }
-            )
-        }
-        if (transactions.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = "Belum ada transaksi hari ini. Ketuk tanda + untuk menambahkan transaksi baru.",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-            }
-        } else {
-            LazyColumn(
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp, 0.dp, 24.dp, 12.dp)
-            ) {
-                items(transactions) { transaction ->
-                    TransactionCard(transaction)
-                }
-            }
-        }
-    }
 
 }

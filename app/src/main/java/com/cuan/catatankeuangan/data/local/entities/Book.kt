@@ -6,15 +6,16 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "transaction_table")
-data class Transaction(
+@Entity(tableName = "book_table")
+data class Book(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    val total: Long,
-    val transactionType: TransactionType,
+    val name: String,
+    val type: BookType,
     val description: String?,
-    val timestamp: Long
+    val address: String?,
+    val phone: Long?
 ) : Parcelable
 
-enum class TransactionType {
-    INCOME, EXPENSE
+enum class BookType {
+    BISNIS, PRIBADI
 }

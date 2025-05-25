@@ -62,7 +62,7 @@ import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.components.CategoryFilter
 import com.cuan.catatankeuangan.presentation.components.ProductCard
 import com.cuan.catatankeuangan.presentation.components.WarningDialog
-import com.cuan.catatankeuangan.presentation.screens.product.category.ProductCategory
+import com.cuan.catatankeuangan.presentation.screens.category.ProductCategory
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
