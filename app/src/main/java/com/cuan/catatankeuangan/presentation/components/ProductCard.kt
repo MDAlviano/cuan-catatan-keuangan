@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,15 +34,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -51,12 +45,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import coil.compose.rememberAsyncImagePainter
 import com.cuan.catatankeuangan.R
-import com.cuan.catatankeuangan.data.local.entities.Category
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.outfitFamily
-import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 
 @Composable

@@ -46,7 +46,7 @@ fun LoginScreen() {
         TopBar(
             modifier = Modifier.weight(1f),
             onClick = { /* TODO */ },
-            text = "Masuk"
+            text = "Masuk",
         )
         Column(
             modifier = Modifier

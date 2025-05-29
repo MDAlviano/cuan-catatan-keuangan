@@ -79,7 +79,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
-
     val productList by productViewModel.allProducts.observeAsState(initial = emptyList())
     var selectedProduct by remember { mutableStateOf<Product?>(null) }
 
