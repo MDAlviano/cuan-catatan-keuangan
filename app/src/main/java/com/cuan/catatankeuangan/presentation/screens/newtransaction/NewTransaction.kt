@@ -329,11 +329,11 @@ fun NewTransactionDialog(
                                     // Add transaction to database
                                     val transaction = Transaction(
                                         id = 0,
-                                        description = description,
+                                        description = description.ifEmpty { null },
                                         transactionType = if (selectedType == "Pemasukan") {
-                                            TransactionType.MASUK
+                                            TransactionType.INCOME
                                         } else {
-                                            TransactionType.KELUAR
+                                            TransactionType.EXPENSE
                                         },
                                         total = rawTotalAmount.value.toLongOrNull() ?: 0L,
                                         timestamp = currentTime

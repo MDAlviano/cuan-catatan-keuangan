@@ -10,11 +10,11 @@ class TransactionRepository(context: Context) {
     private val transactionDao = MainDatabase.getMainDatabase(context).transactionDao()
 
     fun getTotalPemasukan(): LiveData<Long> {
-        return transactionDao.getTotalByType(TransactionType.MASUK)
+        return transactionDao.getTotalByType(TransactionType.INCOME)
     }
 
     fun getTotalPengeluaran(): LiveData<Long> {
-        return transactionDao.getTotalByType(TransactionType.KELUAR)
+        return transactionDao.getTotalByType(TransactionType.EXPENSE)
     }
 
     fun getTodayPemasukan(): LiveData<Long> {

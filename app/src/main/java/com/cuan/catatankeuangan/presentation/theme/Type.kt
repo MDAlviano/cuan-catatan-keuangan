@@ -10,28 +10,22 @@ import androidx.compose.ui.unit.sp
 import com.cuan.catatankeuangan.R
 
 val ralewayFamily = FontFamily(
-    Font(R.font.raleway_extralight, FontWeight.ExtraLight),
     Font(R.font.raleway_light, FontWeight.Light),
     Font(R.font.raleway_regular, FontWeight.Normal),
     Font(R.font.raleway_medium, FontWeight.Medium),
     Font(R.font.raleway_semibold, FontWeight.SemiBold),
-    Font(R.font.raleway_bold, FontWeight.Bold),
-    Font(R.font.raleway_extrabold, FontWeight.ExtraBold),
-    Font(R.font.raleway_black, FontWeight.Black)
+    Font(R.font.raleway_bold, FontWeight.Bold)
 )
 
-val outfitFamily = FontFamily(
-    Font(R.font.outfit_extralight, FontWeight.ExtraLight),
-    Font(R.font.outfit_light, FontWeight.Light),
-    Font(R.font.outfit_regular, FontWeight.Normal),
-    Font(R.font.outfit_medium, FontWeight.Medium),
-    Font(R.font.outfit_semibold, FontWeight.SemiBold),
-    Font(R.font.outfit_bold, FontWeight.Bold),
-    Font(R.font.outfit_extrabold, FontWeight.ExtraBold),
-    Font(R.font.outfit_black, FontWeight.Black)
+val interFamily = FontFamily(
+    Font(R.font.inter_extralight, FontWeight.ExtraLight),
+    Font(R.font.inter_light, FontWeight.Light),
+    Font(R.font.inter_regular, FontWeight.Normal),
+    Font(R.font.inter_medium, FontWeight.Medium),
+    Font(R.font.inter_semibold, FontWeight.SemiBold),
+    Font(R.font.inter_bold, FontWeight.Bold),
 )
 
-// Set of Material typography styles to start with
 val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = ralewayFamily,
@@ -43,6 +37,12 @@ val Typography = Typography(
         fontFamily = ralewayFamily,
         fontWeight = FontWeight.Medium,
         fontSize = 24.sp,
+        color = Color.Black
+    ),
+    titleLarge = TextStyle(
+        fontFamily = ralewayFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp,
         color = Color.Black
     ),
     bodyLarge = TextStyle(
@@ -58,8 +58,12 @@ val Typography = Typography(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
     ),
-    labelSmall = TextStyle(
+    labelMedium = TextStyle(
         fontFamily = ralewayFamily,
         fontSize = 12.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = ralewayFamily,
+        fontSize = 11.sp
     )
 )

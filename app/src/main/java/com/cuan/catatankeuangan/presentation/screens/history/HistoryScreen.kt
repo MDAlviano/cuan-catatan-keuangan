@@ -53,17 +53,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.cuan.catatankeuangan.R
+import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.data.local.entities.TransactionType
 import com.cuan.catatankeuangan.presentation.components.AbbreviatedNominalText
 import com.cuan.catatankeuangan.presentation.components.AutoResizedText
 import com.cuan.catatankeuangan.presentation.components.BalanceDetailsDialog
 import com.cuan.catatankeuangan.presentation.components.TransactionCard
 import com.cuan.catatankeuangan.presentation.screens.newtransaction.NewTransactionDialog
+import com.cuan.catatankeuangan.presentation.screens.transactiondetails.TransactionDetails
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 import com.cuan.catatankeuangan.presentation.utils.getDate
@@ -75,7 +77,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
-fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewModel, productViewModel: ProductViewModel) {
+fun HistoryScreen(
+    bottomNavHeight: Dp,
+    transactionViewModel: TransactionViewModel,
+    productViewModel: ProductViewModel
+) {
 
     val customTopPadding = getCustomTopPadding(16.dp)
 
@@ -92,8 +98,12 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
 
     val groupedTransactions = filteredTransactions.groupBy { getDate(it.timestamp) }
 
-    var showDialog by remember { mutableStateOf(false) }
+    var selectedTransaction by remember { mutableStateOf<Transaction?>(null) }
+
+    var showNewTransaction by remember { mutableStateOf(false) }
     var showBalanceDetails by remember { mutableStateOf(false) }
+    var showTransactionDetails by remember { mutableStateOf(false) }
+
 
     val listState = rememberLazyListState()
     var isFabVisible by remember { mutableStateOf(true) }
@@ -132,7 +142,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                 .zIndex(100F)
         ) {
             FloatingActionButton(
-                onClick = { showDialog = true },
+                onClick = { showNewTransaction = true },
                 containerColor = Color2,
                 shape = RoundedCornerShape(20)
             ) {
@@ -152,10 +162,19 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
         NewTransactionDialog(
             transactionViewModel,
             productViewModel,
-            showDialog = showDialog,
-            onDismiss = { showDialog = false },
-            onConfirm = { showDialog = false }
+            showDialog = showNewTransaction,
+            onDismiss = { showNewTransaction = false },
+            onConfirm = { showNewTransaction = false }
         )
+
+        selectedTransaction?.let {
+            TransactionDetails(
+                transactionViewModel = transactionViewModel,
+                transaction = it,
+                showDialog = showTransactionDetails,
+                onDismiss = { showTransactionDetails = false }
+            )
+        }
 
 
         Column(
@@ -198,7 +217,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                     text = formatAsCurrency(totalSaldo),
                     fontSize = 18.sp,
                     style = TextStyle(
-                        fontFamily = outfitFamily,
+                        fontFamily = interFamily,
                         textAlign = TextAlign.End
                     ),
                     modifier = Modifier
@@ -214,7 +233,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedCard(
-                    colors = if (applyFilter == TransactionType.MASUK) {
+                    colors = if (applyFilter == TransactionType.INCOME) {
                         CardDefaults.cardColors(containerColor = Color1)
                     } else {
                         CardDefaults.cardColors(containerColor = Color.Transparent)
@@ -228,7 +247,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                                 onLongPress = { showBalanceDetails = true },
                                 onTap = {
                                     applyFilter =
-                                        if (applyFilter == TransactionType.MASUK) null else TransactionType.MASUK
+                                        if (applyFilter == TransactionType.INCOME) null else TransactionType.INCOME
                                 }
                             )
                         }
@@ -245,7 +264,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_up),
                             contentDescription = "Pemasukan",
-                            tint = if (applyFilter == TransactionType.MASUK) {
+                            tint = if (applyFilter == TransactionType.INCOME) {
                                 Color1
                             } else {
                                 Color.White
@@ -254,7 +273,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                                 .size(28.dp)
                                 .rotate(180F)
                                 .background(
-                                    if (applyFilter == TransactionType.MASUK) {
+                                    if (applyFilter == TransactionType.INCOME) {
                                         Color.White
                                     } else {
                                         Color1
@@ -265,7 +284,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                         )
 
                         Column {
-                            val textColor = if (applyFilter == TransactionType.MASUK) {
+                            val textColor = if (applyFilter == TransactionType.INCOME) {
                                 Color.White
                             } else {
                                 Color1
@@ -290,7 +309,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                 }
 
                 OutlinedCard(
-                    colors = if (applyFilter == TransactionType.KELUAR) {
+                    colors = if (applyFilter == TransactionType.EXPENSE) {
                         CardDefaults.cardColors(containerColor = Color3)
                     } else {
                         CardDefaults.cardColors(containerColor = Color.Transparent)
@@ -304,7 +323,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                                 onLongPress = { showBalanceDetails = true },
                                 onTap = {
                                     applyFilter =
-                                        if (applyFilter == TransactionType.KELUAR) null else TransactionType.KELUAR
+                                        if (applyFilter == TransactionType.EXPENSE) null else TransactionType.EXPENSE
                                 }
                             )
                         }
@@ -317,7 +336,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_up),
                             contentDescription = "Pengeluaran",
-                            tint = if (applyFilter == TransactionType.KELUAR) {
+                            tint = if (applyFilter == TransactionType.EXPENSE) {
                                 Color3
                             } else {
                                 Color.White
@@ -325,7 +344,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                             modifier = Modifier
                                 .size(28.dp)
                                 .background(
-                                    if (applyFilter == TransactionType.KELUAR) {
+                                    if (applyFilter == TransactionType.EXPENSE) {
                                         Color.White
                                     } else {
                                         Color3
@@ -336,7 +355,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                         )
 
                         Column {
-                            val textColor = if (applyFilter == TransactionType.KELUAR) {
+                            val textColor = if (applyFilter == TransactionType.EXPENSE) {
                                 Color.White
                             } else {
                                 Color3
@@ -381,7 +400,7 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                                 text = date,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 14.sp,
-                                fontFamily = outfitFamily,
+                                fontFamily = interFamily,
                                 color = Color.Black,
                                 modifier = Modifier.padding(vertical = 4.dp)
                             )
@@ -390,6 +409,10 @@ fun HistoryScreen(bottomNavHeight: Dp, transactionViewModel: TransactionViewMode
                         items(transactionList) { transaction ->
                             TransactionCard(
                                 transaction,
+                                onClick = {
+                                    showTransactionDetails = true
+                                    selectedTransaction = transaction
+                                },
                                 modifier = Modifier.padding(vertical = 4.dp)
                             )
                         }

@@ -30,7 +30,7 @@ fun CategoryFilter(
             FilterChip(
                 selected = selectedCategoryId == null,
                 onClick = { onCategorySelected(null) },
-                label = { Text(text = "Semua", fontFamily = ralewayFamily) },
+                label = { Text(text = "Semua") },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = Color1,
                     labelColor = Color1,
@@ -48,7 +48,7 @@ fun CategoryFilter(
             FilterChip(
                 selected = category.id == selectedCategoryId,
                 onClick = { onCategorySelected(category.id) },
-                label = { Text(text = category.name, fontFamily = ralewayFamily) },
+                label = { Text(text = category.name) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = Color1,
                     labelColor = Color1,

@@ -160,18 +160,17 @@ fun SelectProductSheet(
 //                    state = gridState,
                     columns = GridCells.Fixed(2),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(vertical = 6.dp)
+                        .padding(vertical = 6.dp, horizontal = 24.dp)
                 ) {
                     items(filteredProducts) { product ->
                         TransactionProductCard(
-//                            onClick = { /*TODO*/ },
-                            name = product.name,
-                            price = product.sellPrice,
+                            product = product,
+                            onClick = { /*TODO*/ },
+                            label = "Stok: ${product.stock}",
                             category = "",
-                            stock = product.stock
                         )
                     }
                 }

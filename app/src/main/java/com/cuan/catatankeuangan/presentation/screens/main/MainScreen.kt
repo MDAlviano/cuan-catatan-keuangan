@@ -3,6 +3,7 @@ package com.cuan.catatankeuangan.presentation.screens.main
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -29,12 +30,17 @@ import androidx.navigation.compose.rememberNavController
 import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 import com.cuan.catatankeuangan.presentation.navigation.BottomNavGraph
 import com.cuan.catatankeuangan.presentation.theme.Color2
+import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(transactionViewModel: TransactionViewModel, productViewModel: ProductViewModel) {
+fun MainScreen(
+    transactionViewModel: TransactionViewModel,
+    productViewModel: ProductViewModel,
+    bookViewModel: BookViewModel
+) {
     val navController = rememberNavController()
     var bottomNavHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
@@ -67,7 +73,8 @@ fun MainScreen(transactionViewModel: TransactionViewModel, productViewModel: Pro
             navController = navController,
             bottomNavHeight,
             transactionViewModel = transactionViewModel,
-            productViewModel = productViewModel
+            productViewModel = productViewModel,
+            bookViewModel = bookViewModel
         )
     }
 }
@@ -84,6 +91,7 @@ fun BottomBar(
         containerColor = Color2,
         modifier = Modifier
             .fillMaxWidth()
+            .padding(top = 22.dp)
             .onSizeChanged { size -> onHeightChanged(size.height) }
 //            .padding(horizontal = 24.dp)
     ) {

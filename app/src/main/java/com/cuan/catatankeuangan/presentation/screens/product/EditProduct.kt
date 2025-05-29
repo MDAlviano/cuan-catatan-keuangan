@@ -1,29 +1,26 @@
 package com.cuan.catatankeuangan.presentation.screens.product
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -32,8 +29,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -41,7 +36,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,29 +46,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
 import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.components.CurrencyTextField
 import com.cuan.catatankeuangan.presentation.components.CustomTextField
 import com.cuan.catatankeuangan.presentation.components.TopBar
-import com.cuan.catatankeuangan.presentation.screens.product.category.NewCategoryDialog
+import com.cuan.catatankeuangan.presentation.screens.category.NewCategoryDialog
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
-import com.cuan.catatankeuangan.presentation.utils.formatNominal
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import java.io.File
 
@@ -90,21 +83,47 @@ fun EditProduct(
     val imageUri = remember { mutableStateOf<Uri?>(null) }
     val imagePath = remember { mutableStateOf<String?>(null) }
 
+    val cropImageLauncher = rememberLauncherForActivityResult(
+        contract = CropImageContract()
+    ) { result ->
+        if (result.isSuccessful) {
+            val croppedUri = result.uriContent
+            imageUri.value = croppedUri
+
+            // Compress image and saving to local
+            croppedUri?.let { uri ->
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val file = File(context.filesDir, "product_${System.currentTimeMillis()}.jpg")
+
+                inputStream?.use { input ->
+                    val bitmap = BitmapFactory.decodeStream(input)
+                    file.outputStream().use { output ->
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, output) // 60% quality
+                    }
+                }
+
+                imagePath.value = file.absolutePath
+            }
+        } else {
+            Log.e("Cropper", "Failed to crop: ${result.error}")
+        }
+    }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            imageUri.value = it
-
-            val inputStream = context.contentResolver.openInputStream(uri)
-            val file = File(context.filesDir, "product_${System.currentTimeMillis()}.jpg")
-            inputStream?.use { input ->
-                file.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-
-            imagePath.value = file.absolutePath
+            cropImageLauncher.launch(
+                CropImageContractOptions(
+                    uri,
+                    CropImageOptions().apply {
+                        aspectRatioX = 1
+                        aspectRatioY = 1
+                        fixAspectRatio = true
+                        guidelines = CropImageView.Guidelines.ON
+                    }
+                )
+            )
         }
     }
 
@@ -127,7 +146,10 @@ fun EditProduct(
         var selectedCategory by remember { mutableStateOf("Pilih Kategori") }
         var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(product) {
+            imageUri.value = null
+            imagePath.value = null
+
             productNameValue = product.name
             sellPriceValue = TextFieldValue(product.sellPrice.toString())
             buyPriceValue = TextFieldValue(product.buyPrice.toString())
@@ -144,7 +166,10 @@ fun EditProduct(
         NewCategoryDialog(
             productViewModel = productViewModel,
             showDialog = showNewCategory,
-            onDismiss = { showNewCategory = false }
+            onDismiss = {
+                showNewCategory = false
+                imageUri.value = null
+            }
         )
 
         Dialog(
@@ -180,11 +205,11 @@ fun EditProduct(
                                 }
 
                                 !product.imageUri.isNullOrEmpty() -> {
-                                    rememberAsyncImagePainter(model = File(product.imageUri!!))
+                                    rememberAsyncImagePainter(model = File(product.imageUri))
                                 }
 
                                 else -> {
-                                    painterResource(id = R.drawable.product1)
+                                    painterResource(id = R.drawable.no_image)
                                 }
                             }
 
@@ -317,7 +342,6 @@ fun EditProduct(
                             if (name.isNotEmpty()
                                 && sellPrice != 0L
                                 && buyPrice != 0L
-                                && selectedCategoryId != null
                             ) {
                                 val updatedProduct = product.copy(
                                     name = name,

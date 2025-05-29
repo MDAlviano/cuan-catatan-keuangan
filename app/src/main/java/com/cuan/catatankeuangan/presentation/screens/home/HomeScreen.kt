@@ -11,17 +11,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -30,8 +27,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,7 +49,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,13 +61,14 @@ import com.cuan.catatankeuangan.presentation.components.AutoResizedText
 import com.cuan.catatankeuangan.presentation.components.BalanceDetailsDialog
 import com.cuan.catatankeuangan.presentation.components.TransactionCard
 import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
+import com.cuan.catatankeuangan.presentation.screens.transactiondetails.TransactionDetails
 import com.cuan.catatankeuangan.presentation.screens.newtransaction.NewTransactionDialog
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 import com.cuan.catatankeuangan.presentation.theme.VerticalGradient
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
@@ -98,9 +93,12 @@ fun HomeScreen(
 
     val customTopPadding = getCustomTopPadding(24.dp)
 
-    var showDialog by remember { mutableStateOf(false) }
+    var showNewTransaction by remember { mutableStateOf(false) }
     var showBalance by remember { mutableStateOf(true) }
     var showBalanceDetails by remember { mutableStateOf(false) }
+    var showTransactionDetails by remember { mutableStateOf(false) }
+
+    var selectedTransaction by remember { mutableStateOf<Transaction?>(null) }
 
     val listState = rememberLazyListState()
     var isFabVisible by remember { mutableStateOf(true) }
@@ -139,7 +137,7 @@ fun HomeScreen(
                 .zIndex(100F)
         ) {
             FloatingActionButton(
-                onClick = { showDialog = true },
+                onClick = { showNewTransaction = true },
                 containerColor = Color2,
                 shape = RoundedCornerShape(20)
             ) {
@@ -159,10 +157,19 @@ fun HomeScreen(
         NewTransactionDialog(
             transactionViewModel,
             productViewModel,
-            showDialog = showDialog,
-            onDismiss = { showDialog = false },
-            onConfirm = { showDialog = false }
+            showDialog = showNewTransaction,
+            onDismiss = { showNewTransaction = false },
+            onConfirm = { showNewTransaction = false }
         )
+
+        selectedTransaction?.let {
+            TransactionDetails(
+                transactionViewModel = transactionViewModel,
+                transaction = it,
+                showDialog = showTransactionDetails,
+                onDismiss = { showTransactionDetails = false }
+            )
+        }
 
         Column() {
             Box(
@@ -211,7 +218,7 @@ fun HomeScreen(
                                 },
                                 fontSize = 24.sp,
                                 style = TextStyle(
-                                    fontFamily = outfitFamily,
+                                    fontFamily = interFamily,
                                     fontWeight = FontWeight.Normal,
                                     color = Color.White
                                 )
@@ -320,7 +327,7 @@ fun HomeScreen(
                                     value = todayPemasukan,
                                     color = Color.Black,
                                     style = TextStyle(
-                                        fontFamily = outfitFamily,
+                                        fontFamily = interFamily,
                                         fontSize = 22.sp
                                     )
                                 )
@@ -328,7 +335,7 @@ fun HomeScreen(
 //                                    text = formatAsCurrency(totalPemasukan),
 //                                    fontSize = 22.sp,
 //                                    customStyle = TextStyle(
-//                                        fontFamily = outfitFamily,
+//                                        fontFamily = interFamily,
 //                                        textAlign = TextAlign.Center
 //                                    ),
 //                                )
@@ -350,7 +357,7 @@ fun HomeScreen(
                                 AbbreviatedNominalText(
                                     value = todayPengeluaran,
                                     style = TextStyle(
-                                        fontFamily = outfitFamily,
+                                        fontFamily = interFamily,
                                         fontSize = 22.sp
                                     )
                                 )
@@ -358,7 +365,7 @@ fun HomeScreen(
 //                                    text = formatAsCurrency(totalPengeluaran),
 //                                    fontSize = 22.sp,
 //                                    customStyle = TextStyle(
-//                                        fontFamily = outfitFamily,
+//                                        fontFamily = interFamily,
 //                                        textAlign = TextAlign.Center
 //                                    ),
 //                                )
@@ -367,7 +374,63 @@ fun HomeScreen(
                     }
                 }
             }
-            HomeTransactions(todayTransactions, listState, navController)
+//            HomeTransactions(
+//                transactions = todayTransactions,
+//                listState = listState,
+//                navController = navController,
+//                onItemClicked = {
+//                    showTransactionDetails = true
+////                    selectedTransaction =
+//                })
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp, 56.dp, 24.dp, 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.latest_transaction_home),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = stringResource(R.string.details_home),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = OptionalColor3,
+                        modifier = Modifier.clickable { navController.navigate(BottomBarScreen.History.route) }
+                    )
+                }
+                if (todayTransactions.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Belum ada transaksi hari ini. Ketuk tanda + untuk menambahkan transaksi baru.",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 24.dp)
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        state = listState,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp, 0.dp, 24.dp, 12.dp)
+                    ) {
+                        items(todayTransactions) { transaction ->
+                            TransactionCard(transaction, onClick = {
+                                showTransactionDetails = true
+                                selectedTransaction = transaction
+                            })
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -376,53 +439,9 @@ fun HomeScreen(
 fun HomeTransactions(
     transactions: List<Transaction>,
     listState: LazyListState,
-    navController: NavController
+    navController: NavController,
+    onItemClicked: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp, 56.dp, 24.dp, 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.latest_transaction_home),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = stringResource(R.string.details_home),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                color = OptionalColor3,
-                modifier = Modifier.clickable { navController.navigate(BottomBarScreen.History.route) }
-            )
-        }
-        if (transactions.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = "Belum ada transaksi hari ini. Ketuk tanda + untuk menambahkan transaksi baru.",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-            }
-        } else {
-            LazyColumn(
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp, 0.dp, 24.dp, 12.dp)
-            ) {
-                items(transactions) { transaction ->
-                    TransactionCard(transaction)
-                }
-            }
-        }
-    }
 
 }

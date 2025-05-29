@@ -24,6 +24,12 @@ class TransactionViewModel(application: Application): AndroidViewModel(applicati
         }
     }
 
+    fun deleteTransaction(transaction: Transaction) {
+        viewModelScope.launch(Dispatchers.IO) {
+            transactionDao.deleteTransaction(transaction)
+        }
+    }
+
     val totalPemasukan: LiveData<Long> = transactionRepository.getTotalPemasukan()
     val totalPengeluaran: LiveData<Long> = transactionRepository.getTotalPengeluaran()
 

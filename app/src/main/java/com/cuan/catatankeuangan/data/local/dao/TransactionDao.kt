@@ -37,10 +37,10 @@ interface TransactionDao {
     )
     fun getTodayTransactions(): LiveData<List<Transaction>>
 
-    @Query("SELECT IFNULL(SUM(total), 0) FROM transaction_table WHERE transactionType = 'MASUK' AND date(timestamp / 1000, 'unixepoch', 'localtime') = date('now', 'localtime')")
+    @Query("SELECT IFNULL(SUM(total), 0) FROM transaction_table WHERE transactionType = 'INCOME' AND date(timestamp / 1000, 'unixepoch', 'localtime') = date('now', 'localtime')")
     fun getTodayPemasukan(): LiveData<Long>
 
-    @Query("SELECT IFNULL(SUM(total), 0) FROM transaction_table WHERE transactionType = 'KELUAR' AND date(timestamp / 1000, 'unixepoch', 'localtime') = date('now', 'localtime')")
+    @Query("SELECT IFNULL(SUM(total), 0) FROM transaction_table WHERE transactionType = 'EXPENSE' AND date(timestamp / 1000, 'unixepoch', 'localtime') = date('now', 'localtime')")
     fun getTodayPengeluaran(): LiveData<Long>
 
 

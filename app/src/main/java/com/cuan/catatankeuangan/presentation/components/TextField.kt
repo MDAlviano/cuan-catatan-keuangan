@@ -22,12 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.formatInputNominal
 
-
-// iya saya tau ini dobel tapi yaudah lah ya hehe
 @Composable
 fun CustomTextField(
     label: String,
@@ -50,6 +48,11 @@ fun CustomTextField(
             onValueChange = onValueChange,
             placeholder = { Text(text = hint, color = OptionalColor3) },
             shape = RoundedCornerShape(12.dp),
+            maxLines = 1,
+            textStyle = TextStyle(
+                fontFamily = ralewayFamily,
+                color = Color.Black
+            ),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = OptionalColor3,
                 focusedBorderColor = Color2
@@ -86,7 +89,7 @@ fun CurrencyTextField(
                 Text(
                     text = "0",
                     color = OptionalColor3,
-                    fontFamily = outfitFamily,
+                    fontFamily = interFamily,
                     fontSize = 18.sp
                 )
             },
@@ -103,7 +106,8 @@ fun CurrencyTextField(
                 unfocusedBorderColor = OptionalColor3,
                 focusedBorderColor = Color2
             ),
-            textStyle = TextStyle(color = Color2, fontFamily = outfitFamily, fontSize = 18.sp),
+            textStyle = TextStyle(color = Color2, fontFamily = interFamily, fontSize = 18.sp),
+            maxLines = 1,
             modifier = Modifier
                 .fillMaxWidth()
                 .then(modifier)

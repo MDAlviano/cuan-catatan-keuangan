@@ -12,10 +12,9 @@ data class Transaction(
     val total: Long,
     val transactionType: TransactionType,
     val description: String?,
-    val timestamp: Long,
-//    val productDetails: String?
+    val timestamp: Long
 ) : Parcelable
 
 enum class TransactionType {
-    MASUK, KELUAR
+    INCOME, EXPENSE
 }
