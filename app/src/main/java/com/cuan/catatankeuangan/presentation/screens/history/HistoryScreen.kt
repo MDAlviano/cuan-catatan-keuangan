@@ -85,7 +85,7 @@ fun HistoryScreen(
 
     val customTopPadding = getCustomTopPadding(16.dp)
 
-    val transactions by transactionViewModel.allTransactions.observeAsState(initial = emptyList())
+    val transactions by transactionViewModel.allTransaction.observeAsState(initial = emptyList())
     val totalSaldo by transactionViewModel.totalSaldo.observeAsState(initial = 0L)
     val totalPemasukan by transactionViewModel.totalPemasukan.observeAsState(initial = 0L)
     val totalPengeluaran by transactionViewModel.totalPengeluaran.observeAsState(initial = 0L)

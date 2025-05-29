@@ -37,7 +37,7 @@ fun BottomNavGraph(
             HistoryScreen(bottomNavHeight, transactionViewModel, productViewModel)
         }
         composable(route = BottomBarScreen.Report.route) {
-            ReportScreen()
+            ReportScreen(bottomNavHeight, productViewModel)
         }
         composable(route = BottomBarScreen.Profile.route) {
             ProfileScreen(navController, bottomNavHeight, bookViewModel)

@@ -11,12 +11,11 @@ import com.cuan.catatankeuangan.data.repository.TransactionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class TransactionViewModel(application: Application) : AndroidViewModel(application) {
-
+class TransactionViewModel(application: Application): AndroidViewModel(application) {
     private val transactionDao = MainDatabase.getMainDatabase(application).transactionDao()
     private val transactionRepository: TransactionRepository = TransactionRepository(application)
 
-    val allTransactions: LiveData<List<Transaction>> = transactionDao.getAllTransaction()
+    val allTransaction: LiveData<List<Transaction>> = transactionDao.getAllTransaction()
     val todayTransactions: LiveData<List<Transaction>> = transactionDao.getTodayTransactions()
 
     fun addTransaction(transaction: Transaction) {
