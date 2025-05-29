@@ -29,6 +29,8 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -58,6 +60,7 @@ import com.cuan.catatankeuangan.presentation.screens.product.category.ProductCat
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.Color3
+import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import java.time.LocalDate
@@ -134,7 +137,13 @@ fun ReportScreen(
                     )
                     Switch(
                         checked = isRange,
-                        onCheckedChange = { isRange = it }
+                        onCheckedChange = { isRange = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = Color1,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = OptionalColor3
+                        )
                     )
                 }
 
@@ -385,7 +394,13 @@ fun ReportScreen(
                     )
                     Switch(
                         checked = isRange,
-                        onCheckedChange = { isRange = it }
+                        onCheckedChange = { isRange = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = Color1,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = OptionalColor3
+                        )
                     )
                 }
 
