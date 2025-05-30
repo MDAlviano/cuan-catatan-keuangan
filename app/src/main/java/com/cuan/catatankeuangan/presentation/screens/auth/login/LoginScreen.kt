@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.cuan.catatankeuangan.presentation.utils.FirebaseAuthHelper
 import androidx.navigation.compose.rememberNavController
+import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -52,7 +53,7 @@ fun LoginScreen(navController: NavController) {
     ) {
         TopBar(
             modifier = Modifier.weight(1f),
-            onClick = { /* TODO */ },
+            onClick = { navController.navigate(BottomBarScreen.History.route) },
             text = "Masuk",
         )
         Column(

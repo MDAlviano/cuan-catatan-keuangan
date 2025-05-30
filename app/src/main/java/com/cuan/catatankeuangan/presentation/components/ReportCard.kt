@@ -38,7 +38,7 @@ import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.data.local.entities.TransactionType
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
-import com.cuan.catatankeuangan.presentation.theme.outfitFamily
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -83,7 +83,7 @@ fun ReportCategoryCard(category: Category, transaction: Transaction, modifier: M
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = "10 Transaksi",
-                        fontFamily = outfitFamily,
+                        fontFamily = interFamily,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Light,
                     )
@@ -92,7 +92,7 @@ fun ReportCategoryCard(category: Category, transaction: Transaction, modifier: M
             Column(verticalArrangement = Arrangement.Center) {
                 Text(
                     text = "Rp5.500",
-                    fontFamily = outfitFamily,
+                    fontFamily = interFamily,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Light,
                     color = Color1
@@ -100,7 +100,7 @@ fun ReportCategoryCard(category: Category, transaction: Transaction, modifier: M
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "Rp500",
-                    fontFamily = outfitFamily,
+                    fontFamily = interFamily,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Light,
                     color = Color3
@@ -159,7 +159,7 @@ fun ReportCard(
                 Text(
                     text = "Stok: ${product.stock}",
                     fontSize = 12.sp,
-                    fontFamily = outfitFamily,
+                    fontFamily = interFamily,
                     color = Color.White,
                     modifier = Modifier
                         .align(Alignment.TopStart)
@@ -201,7 +201,7 @@ fun ReportCard(
                     Text(
                         text = formatAsCurrency(product.sellPrice),
                         fontSize = 18.sp,
-                        fontFamily = outfitFamily,
+                        fontFamily = interFamily,
                         fontWeight = FontWeight.Medium,
                         lineHeight = 34.sp
                     )

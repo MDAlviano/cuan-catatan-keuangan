@@ -24,11 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,10 +49,34 @@ import com.cuan.catatankeuangan.presentation.theme.VerticalGradient
 import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 @Composable
 fun ProfileScreen(navController: NavController, bottomNavHeight: Dp, bookViewModel: BookViewModel) {
+    val user = FirebaseAuth.getInstance().currentUser
+    val isLoggedIn = user != null
+    val currentUserEmail = user?.email
+
+    var name by remember { mutableStateOf("Username") }
+    var email by remember { mutableStateOf("Email") }
+
+    // Fetch data from Firestore
+    LaunchedEffect(currentUserEmail) {
+        currentUserEmail?.let {
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(it)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        name = document.getString("name") ?: "Username"
+                        email = document.getString("email") ?: "Email"
+                    }
+                }
+        }
+    }
 
     val customTopPadding = getCustomTopPadding(16.dp)
 
@@ -66,8 +86,6 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp, bookViewMod
 
     var digimon by remember { mutableStateOf(false) }
 
-    var isLoggedIn by remember { mutableStateOf(true) }
-
     ProfileEdit(
         editProfileScreen = showEditProfileScreen,
         onDismiss = { showEditProfileScreen = false }
@@ -75,7 +93,7 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp, bookViewMod
 
     BookList(
         showDialog = digimon,
-        onDismiss = { digimon = false},
+        onDismiss = { digimon = false },
         bookViewModel = bookViewModel
     )
 
@@ -146,7 +164,18 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp, bookViewMod
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                SectionCardWithTwoButtons()
+                SectionCardWithTwoButtons(
+                    isLoggedIn = isLoggedIn,
+                    onLogoutOrLoginClick = {
+                        if (isLoggedIn) {
+                            FirebaseAuth.getInstance().signOut()
+                        }
+                        navController.navigate("login") {
+                            popUpTo("profile") { inclusive = true }
+                        }
+                    }
+                )
+
 
             }
 
@@ -179,14 +208,14 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp, bookViewMod
 
                 // Full name
                 Text(
-                    text = "Lebaran James",
+                    text = name,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 ) // TODO: Change full name dynamically
 
                 // Email
                 Text(
-                    text = "cuancuandancyonyacyonya@cuan.Com",
+                    text = email,
                     fontSize = 14.sp,
                     fontFamily = interFamily,
                     color = OptionalColor3
@@ -241,6 +270,41 @@ fun ProfileItem(
 }
 
 @Composable
+fun LoginItem(onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .clickable { onClick() }
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(bottomStart = 25f, bottomEnd = 25f),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(R.drawable.ikon_log_out_merah_buat_skrin_profil),
+                    contentDescription = "",
+                    tint = Color3,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Masuk",
+                    fontWeight = FontWeight.Medium,
+                    color = Color3,
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
 fun LogoutItem(onClick: () -> Unit) {
     Card(
         modifier = Modifier
@@ -277,7 +341,10 @@ fun LogoutItem(onClick: () -> Unit) {
 }
 
 @Composable
-fun SectionCardWithTwoButtons() {
+fun SectionCardWithTwoButtons(
+    isLoggedIn: Boolean,
+    onLogoutOrLoginClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -293,12 +360,17 @@ fun SectionCardWithTwoButtons() {
         ProfileItem(
             icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
             title = "Panduan",
-            shape = RoundedCornerShape(topStart = 25f, topEnd = 25f),
-            onClick = {/*Navigate*/ })
+            shape = if (!isLoggedIn) RoundedCornerShape(25f) else RoundedCornerShape(topStart = 25f, topEnd = 25f),
+            onClick = { /* Navigate */ }
+        )
 
-//        HorizontalDivider(color = Color(0xFFF0F0F0), thickness = 1.dp) // optional separator
-
-        // Item 2: Keluar Akun
-        LogoutItem(onClick = { /* log out */ })
+        if (isLoggedIn) {
+            // Jika user login, tampilkan tombol logout
+            LogoutItem(onClick = onLogoutOrLoginClick)
+        } else {
+            // Jika belum login, tampilkan tombol login
+            LoginItem(onClick = onLogoutOrLoginClick)
+        }
     }
 }
+

@@ -43,14 +43,11 @@ fun BottomNavGraph(
         composable(route = BottomBarScreen.Profile.route) {
             ProfileScreen(navController, bottomNavHeight, bookViewModel)
         }
-        composable("login") {
+        composable(route = "login") {
             LoginScreen(navController)
         }
-        composable("register") {
+        composable(route = "register") {
             RegisterScreen(navController)
-        }
-        composable("profile") {
-            ProfileScreen(navController, bottomNavHeight)
         }
     }
 }
