@@ -86,8 +86,11 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
 
-    // firebase BoM
+    // firebase
     implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BOM, don't specify versions in Firebase dependencies

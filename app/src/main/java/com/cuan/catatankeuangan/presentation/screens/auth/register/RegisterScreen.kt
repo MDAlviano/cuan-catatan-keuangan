@@ -26,9 +26,17 @@ import com.cuan.catatankeuangan.presentation.components.RedirectText
 import com.cuan.catatankeuangan.presentation.components.TextFields
 import com.cuan.catatankeuangan.presentation.components.TopBar
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
+import android.widget.Toast
+import androidx.navigation.NavController
+import androidx.compose.ui.platform.LocalContext
+import com.cuan.catatankeuangan.presentation.utils.FirebaseAuthHelper.auth
+import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(navController: NavController) {
+    val context = LocalContext.current
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -76,12 +84,57 @@ fun RegisterScreen() {
                 PasswordTextFields(passwordValue = confirmPassword, label = "Konfirmasi Password", hint = "********", onPasswordChange = { confirmPassword = it })
                 Spacer(modifier = Modifier.height(24.dp))
                 CustomButton(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        if (name.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+                            Toast.makeText(context, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show()
+                        } else if (password != confirmPassword) {
+                            Toast.makeText(context, "Password tidak cocok!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            auth.createUserWithEmailAndPassword(email, password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        val user = auth.currentUser
+                                        val profileUpdates = UserProfileChangeRequest.Builder()
+                                            .setDisplayName(name)
+                                            .build()
+
+                                        user?.updateProfile(profileUpdates)?.addOnCompleteListener {
+                                            if (it.isSuccessful) {
+                                                val userData = hashMapOf(
+                                                    "name" to name,
+                                                    "email" to email,
+                                                    "profilePictureUrl" to ""
+                                                )
+
+                                                FirebaseFirestore.getInstance()
+                                                    .collection("users")
+                                                    .document(email)
+                                                    .set(userData)
+                                                    .addOnSuccessListener {
+                                                        Toast.makeText(context, "Registrasi berhasil dan data user tersimpan!", Toast.LENGTH_SHORT).show()
+                                                        // TODO: Navigasi ke VerificationRegisterScreen
+                                                    }
+                                                    .addOnFailureListener { e ->
+                                                        Toast.makeText(context, "Gagal simpan data user: ${e.message}", Toast.LENGTH_SHORT).show()
+                                                    }
+                                            }
+                                        }
+                                    } else {
+                                        Toast.makeText(context, "Registrasi gagal: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                        }
+                    },
                     text = "Konfirmasi",
                     icon = Icons.AutoMirrored.Filled.ArrowForward
                 )
                 Spacer(modifier = Modifier.height(30.dp))
-                RedirectText(text = "Sudah punya akun? ", navText = "Masuk", onClick = {})
+                RedirectText(
+                    text = "Sudah punya akun? ",
+                    navText = "Masuk",
+                    onClick = { navController.navigate("login") }
+                )
             }
         }
     }
@@ -90,5 +143,6 @@ fun RegisterScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun RegisterScreenPreview() {
-    RegisterScreen()
+    val navController = rememberNavController()
+    RegisterScreen(navController = navController)
 }
