@@ -48,19 +48,28 @@ import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 import com.cuan.catatankeuangan.presentation.theme.VerticalGradient
 import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
+import com.cuan.catatankeuangan.repository.BackupManager
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun ProfileScreen(navController: NavController, bottomNavHeight: Dp, bookViewModel: BookViewModel) {
+fun ProfileScreen(
+    navController: NavController,
+    bottomNavHeight: Dp,
+    bookViewModel: BookViewModel,
+    backupManager: BackupManager
+) {
     val user = FirebaseAuth.getInstance().currentUser
     val isLoggedIn = user != null
     val currentUserEmail = user?.email
 
     var name by remember { mutableStateOf("Username") }
     var email by remember { mutableStateOf("Email") }
+
+    val coroutineScope = rememberCoroutineScope()
 
     // Fetch data from Firestore
     LaunchedEffect(currentUserEmail) {
@@ -176,7 +185,16 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp, bookViewMod
                     }
                 )
 
-
+                ProfileItem(
+                    icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
+                    title = "Backup Data",
+                    shape = RoundedCornerShape(25f),
+                    onClick = {
+                        coroutineScope.launch {
+                            backupManager.backupProducts(email)
+                        }
+                    }
+                )
             }
 
 
@@ -371,6 +389,7 @@ fun SectionCardWithTwoButtons(
             // Jika belum login, tampilkan tombol login
             LoginItem(onClick = onLogoutOrLoginClick)
         }
+
     }
 }
 

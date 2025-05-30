@@ -1,6 +1,7 @@
 package com.cuan.catatankeuangan.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,11 +10,22 @@ import com.cuan.catatankeuangan.data.local.entities.Category
 import com.cuan.catatankeuangan.data.local.entities.CategoryWithProducts
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.data.repository.ProductRepository
+import com.cuan.catatankeuangan.repository.BackupManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
+import org.cloudinary.json.JSONObject
+import java.io.File
 
 class ProductViewModel(application: Application) : AndroidViewModel(application) {
+    private val cloudName = "dntcfibpc"
+    private val uploadPreset = "Cuan-Backup-Foto-Produk"
+    private var backupManager: BackupManager? = null
 
     private val repository: ProductRepository = ProductRepository(application)
 
@@ -102,4 +114,50 @@ class ProductViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun setBackupManager(manager: BackupManager) {
+        this.backupManager = manager
+    }
+
+    fun backupProducts(userEmail: String) {
+        viewModelScope.launch {
+            try {
+                backupManager?.backupProducts(userEmail)
+            } catch (e: Exception) {
+                Log.e("ProductViewModel", "Backup failed: ${e.message}")
+            }
+        }
+    }
+
+    fun uploadImageToCloudinary(imageFile: File) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val client = OkHttpClient()
+                val mediaType = "image/*".toMediaTypeOrNull()
+
+                val requestBody = MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", imageFile.name, imageFile.asRequestBody(mediaType))
+                    .addFormDataPart("upload_preset", uploadPreset)
+                    .build()
+
+                val request = Request.Builder()
+                    .url("https://api.cloudinary.com/v1_1/$cloudName/image/upload")
+                    .post(requestBody)
+                    .build()
+
+                val response = client.newCall(request).execute()
+                val body = response.body?.string()
+
+                if (response.isSuccessful && body != null) {
+                    val json = JSONObject(body)
+                    val imageUrl = json.getString("secure_url")
+                    Log.d("Cloudinary", "Upload sukses: $imageUrl")
+                } else {
+                    Log.e("Cloudinary", "Upload gagal: ${response.code} ${response.message}")
+                }
+            } catch (e: Exception) {
+                Log.e("Cloudinary", "Exception: ${e.message}", e)
+            }
+        }
+    }
 }

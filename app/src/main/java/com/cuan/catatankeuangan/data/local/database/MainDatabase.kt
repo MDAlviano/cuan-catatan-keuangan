@@ -49,6 +49,18 @@ abstract class MainDatabase : RoomDatabase() {
                 return instance
             }
         }
+
+        fun getInstance(context: Context): MainDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    MainDatabase::class.java,
+                    "main_db"
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
     }
 
 }

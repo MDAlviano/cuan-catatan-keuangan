@@ -27,6 +27,12 @@ interface ProductDao {
     @Query("SELECT * FROM product_table ORDER BY name")
     fun getAllProducts(): LiveData<List<Product>>
 
+    @Query("SELECT * FROM product_table ORDER BY name")
+    suspend fun getAllProductsForBackup(): List<Product>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(products: List<Product>)
+
 //    @Query("SELECT * FROM product_table WHERE categoryId = :category")
 //    fun getProductsByCategory(): LiveData<List<Product>>
 

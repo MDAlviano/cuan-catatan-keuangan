@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 import com.cuan.catatankeuangan.presentation.navigation.BottomNavGraph
 import com.cuan.catatankeuangan.presentation.theme.Color2
+import com.cuan.catatankeuangan.repository.BackupManager
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
@@ -39,7 +40,8 @@ import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 fun MainScreen(
     transactionViewModel: TransactionViewModel,
     productViewModel: ProductViewModel,
-    bookViewModel: BookViewModel
+    bookViewModel: BookViewModel,
+    backupManager: BackupManager
 ) {
     val navController = rememberNavController()
     var bottomNavHeight by remember { mutableStateOf(0.dp) }
@@ -74,7 +76,8 @@ fun MainScreen(
             bottomNavHeight,
             transactionViewModel = transactionViewModel,
             productViewModel = productViewModel,
-            bookViewModel = bookViewModel
+            bookViewModel = bookViewModel,
+            backupManager = backupManager,
         )
     }
 }
