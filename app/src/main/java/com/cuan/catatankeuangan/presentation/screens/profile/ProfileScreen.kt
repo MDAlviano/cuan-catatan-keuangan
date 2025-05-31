@@ -195,6 +195,17 @@ fun ProfileScreen(
                         }
                     }
                 )
+
+                ProfileItem(
+                    icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
+                    title = "Restore Data",
+                    shape = RoundedCornerShape(25f),
+                    onClick = {
+                        coroutineScope.launch {
+                            backupManager.restoreProducts(email)
+                        }
+                    }
+                )
             }
 
 

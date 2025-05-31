@@ -1,20 +1,25 @@
 package com.cuan.catatankeuangan.repository
 
+import android.content.Context
 import android.net.Uri
-import com.cuan.catatankeuangan.MainActivity
 import com.cuan.catatankeuangan.data.local.dao.ProductDao
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
 
 class BackupManager(
     private val db: FirebaseFirestore,
     private val productDao: ProductDao,
     private val cloudinaryService: CloudinaryService,
-    private val context: MainActivity
+    private val context: Context
 ) {
-
     suspend fun backupProducts(userEmail: String?) {
         if (userEmail == null) return
 
@@ -22,14 +27,16 @@ class BackupManager(
         val userRef = db.collection("backups").document(userEmail)
         val productCollection = userRef.collection("products")
 
-        // Clear old data
         val existing = productCollection.get().await()
         existing.documents.forEach { it.reference.delete() }
 
         for (product in products) {
-            val finalImageUrl = if (product.imageUri != null && !product.imageUri!!.startsWith("http")) {
-                suspendUploadImageToCloudinary(Uri.parse(product.imageUri), "product_${product.id}")
-            } else product.imageUri
+            var imageUrl: String? = product.imageUri
+
+            if (!product.imageUri.isNullOrEmpty() && product.imageUri.startsWith("file://")) {
+                val uri = Uri.parse(product.imageUri)
+                imageUrl = suspendUploadImage(uri, product.id.toString())
+            }
 
             val productMap = mapOf(
                 "id" to product.id,
@@ -38,7 +45,7 @@ class BackupManager(
                 "buyPrice" to product.buyPrice,
                 "stock" to product.stock,
                 "categoryId" to product.categoryId,
-                "imageUri" to finalImageUrl
+                "imageUri" to imageUrl
             )
 
             val docRef = productCollection.document(product.id.toString())
@@ -46,6 +53,14 @@ class BackupManager(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun suspendUploadImage(uri: Uri, publicId: String): String? =
+        suspendCancellableCoroutine { cont ->
+            cloudinaryService.uploadImage(uri, publicId,
+                onSuccess = { url -> cont.resume(url) {} },
+                onError = { cont.resume(null) {} }
+            )
+        }
 
     suspend fun restoreProducts(userEmail: String?) {
         if (userEmail == null) return
@@ -58,31 +73,61 @@ class BackupManager(
 
         val products = snapshot.documents.mapNotNull { doc ->
             try {
+                val id = doc.getLong("id")!!.toInt()
+                val imageUrl = doc.getString("imageUri")
+
+                val localImagePath = if (!imageUrl.isNullOrEmpty()) {
+                    downloadAndSaveImage(imageUrl, id)
+                } else null
+
                 Product(
-                    id = doc.getLong("id")!!.toInt(),
+                    id = id,
                     name = doc.getString("name") ?: "",
                     sellPrice = doc.getLong("sellPrice") ?: 0L,
                     buyPrice = doc.getLong("buyPrice") ?: 0L,
                     stock = doc.getLong("stock")?.toInt() ?: 0,
                     categoryId = doc.getLong("categoryId")?.toInt(),
-                    imageUri = doc.getString("imageUri")
+                    imageUri = localImagePath ?: imageUrl
                 )
             } catch (e: Exception) {
                 null
             }
         }
 
-        productDao.insertAll(products) // Room DAO method
+        productDao.insertAll(products)
     }
 
-    private suspend fun suspendUploadImageToCloudinary(uri: Uri, publicId: String): String? =
-        suspendCancellableCoroutine { cont ->
-            cloudinaryService.uploadImage(
-                uri = uri,
-                publicId = publicId,
-                onSuccess = { cont.resume(it, null) },
-                onError = { cont.resume(null, null) }
-            )
-        }
+    private suspend fun downloadAndSaveImage(imageUrl: String, productId: Int): String? {
+        return try {
+            val url = URL(imageUrl)
+            val connection = withContext(Dispatchers.IO) {
+                url.openConnection()
+            }
+            withContext(Dispatchers.IO) {
+                connection.connect()
+            }
 
+            val inputStream = withContext(Dispatchers.IO) {
+                connection.getInputStream()
+            }
+            val file = File(context.filesDir, "products")
+            if (!file.exists()) file.mkdirs()
+
+            val imageFile = File(file, "$productId.jpg")
+            val outputStream = withContext(Dispatchers.IO) {
+                FileOutputStream(imageFile)
+            }
+
+            inputStream.use { input ->
+                outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            imageFile.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 }

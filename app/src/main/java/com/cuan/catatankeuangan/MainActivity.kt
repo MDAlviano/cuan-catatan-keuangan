@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var backupManager: BackupManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Backup
         val dao = MainDatabase.getInstance(this).productDao()
         val cloudinary = CloudinaryService(context = this)
         val firestore = FirebaseFirestore.getInstance()
@@ -35,8 +36,7 @@ class MainActivity : ComponentActivity() {
             context = this
         )
 
-
-        val imageFile = File("/path/to/image.jpg") // Ganti dengan file sebenarnya
+        val imageFile = File("/path/to/image.jpg")
         productViewModel.uploadImageToCloudinary(imageFile)
 
         super.onCreate(savedInstanceState)
