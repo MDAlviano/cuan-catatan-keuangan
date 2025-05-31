@@ -185,27 +185,30 @@ fun ProfileScreen(
                     }
                 )
 
-                ProfileItem(
-                    icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
-                    title = "Backup Data",
-                    shape = RoundedCornerShape(25f),
-                    onClick = {
-                        coroutineScope.launch {
-                            backupManager.backupProducts(email)
+                if (isLoggedIn) {
+                    ProfileItem(
+                        icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
+                        title = "Backup Data",
+                        shape = RoundedCornerShape(25f),
+                        onClick = {
+                            coroutineScope.launch {
+                                backupManager.backupProducts(email)
+                            }
                         }
-                    }
-                )
+                    )
 
-                ProfileItem(
-                    icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
-                    title = "Restore Data",
-                    shape = RoundedCornerShape(25f),
-                    onClick = {
-                        coroutineScope.launch {
-                            backupManager.restoreProducts(email)
+                    ProfileItem(
+                        icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
+                        title = "Restore Data",
+                        shape = RoundedCornerShape(25f),
+                        onClick = {
+                            coroutineScope.launch {
+                                backupManager.restoreProducts(email)
+                            }
                         }
-                    }
-                )
+                    )
+                }
+
             }
 
 

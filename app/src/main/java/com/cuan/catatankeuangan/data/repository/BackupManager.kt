@@ -2,6 +2,7 @@ package com.cuan.catatankeuangan.repository
 
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import com.cuan.catatankeuangan.data.local.dao.ProductDao
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,9 +22,14 @@ class BackupManager(
     private val context: Context
 ) {
     suspend fun backupProducts(userEmail: String?) {
-        if (userEmail == null) return
+        if (userEmail.isNullOrEmpty()) return
 
         val products = productDao.getAllProductsForBackup()
+        if (products.isEmpty()) {
+            // Mencegah backup jika tidak ada produk di lokal
+            Toast.makeText(context, "Tidak ada data lokal untuk di-backup", Toast.LENGTH_SHORT).show()
+            return
+        }
         val userRef = db.collection("backups").document(userEmail)
         val productCollection = userRef.collection("products")
 
