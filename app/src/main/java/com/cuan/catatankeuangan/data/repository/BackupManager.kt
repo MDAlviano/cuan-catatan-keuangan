@@ -4,8 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import com.cuan.catatankeuangan.data.local.dao.ProductDao
+import com.cuan.catatankeuangan.data.local.dao.TransactionDao
 import com.cuan.catatankeuangan.data.local.entities.Category
 import com.cuan.catatankeuangan.data.local.entities.Product
+import com.cuan.catatankeuangan.data.local.entities.Transaction
+import com.cuan.catatankeuangan.data.local.entities.TransactionType
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,6 +22,7 @@ import java.net.URL
 class BackupManager(
     private val db: FirebaseFirestore,
     private val productDao: ProductDao,
+    private val transactionDao: TransactionDao,
     private val cloudinaryService: CloudinaryService,
     private val context: Context
 ) {
@@ -28,9 +32,13 @@ class BackupManager(
         val products = productDao.getAllProductsForBackup()
         val userRef = db.collection("backups").document(userEmail)
         val productCollection = userRef.collection("products")
+        val transactions = transactionDao.getAllTransactionsForBackup()
+        val transactionCollection = userRef.collection("transactions")
 
         val existing = productCollection.get().await()
         existing.documents.forEach { it.reference.delete() }
+        val existingTransactions = transactionCollection.get().await()
+        existingTransactions.documents.forEach { it.reference.delete() }
 
         for (product in products) {
             var imageUrl: String? = product.imageUri
@@ -53,6 +61,18 @@ class BackupManager(
 
             val docRef = productCollection.document(product.id.toString())
             docRef.set(productMap).await()
+        }
+
+        for (transaction in transactions) {
+            val transactionMap = mapOf(
+                "id" to transaction.id,
+                "description" to transaction.description,
+                "total" to transaction.total,
+                "transactionType" to transaction.transactionType.name,
+                "timestamp" to transaction.timestamp
+            )
+
+            transactionCollection.document(transaction.id.toString()).set(transactionMap).await()
         }
     }
 
@@ -181,6 +201,35 @@ class BackupManager(
         productDao.insertAllCategories(categories)
     }
 
+    suspend fun restoreTransaction(userEmail: String?) {
+        val transactionSnapshot = userEmail?.let {
+            db.collection("backups")
+                .document(it)
+                .collection("transactions")
+                .get()
+                .await()
+        }
+
+        val transactions = transactionSnapshot?.documents?.mapNotNull { doc ->
+            try {
+                Transaction(
+                    id = doc.getLong("id")!!.toInt(),
+                    total = doc.getLong("total") ?: 0L,
+                    transactionType = TransactionType.valueOf(doc.getString("transactionType")!!),
+                    description = doc.getString("description"),
+                    timestamp = doc.getLong("timestamp") ?: 0L
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (transactions != null) {
+            transactionDao.insertAll(transactions)
+        }
+
+    }
+
     suspend fun backupAll(userEmail: String?) {
         if (userEmail.isNullOrEmpty()) return
 
@@ -200,6 +249,7 @@ class BackupManager(
 
         restoreCategories(userEmail)
         restoreProducts(userEmail)
+        restoreTransaction(userEmail)
     }
 
 }

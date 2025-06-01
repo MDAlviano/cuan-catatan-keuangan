@@ -26,15 +26,19 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Backup
-        val dao = MainDatabase.getInstance(this).productDao()
+        val dbInstance = MainDatabase.getInstance(this)
+        val productDao = dbInstance.productDao()
+        val transactionDao = dbInstance.transactionDao()
         val cloudinary = CloudinaryService(context = this)
         val firestore = FirebaseFirestore.getInstance()
-        backupManager  = BackupManager(
+        backupManager = BackupManager(
             db = firestore,
-            productDao = dao,
+            productDao = productDao,
+            transactionDao = transactionDao,
             cloudinaryService = cloudinary,
             context = this
         )
+
 
         val imageFile = File("/path/to/image.jpg")
         productViewModel.uploadImageToCloudinary(imageFile)

@@ -43,5 +43,10 @@ interface TransactionDao {
     @Query("SELECT IFNULL(SUM(total), 0) FROM transaction_table WHERE transactionType = 'EXPENSE' AND date(timestamp / 1000, 'unixepoch', 'localtime') = date('now', 'localtime')")
     fun getTodayPengeluaran(): LiveData<Long>
 
+    @Query("SELECT * FROM transaction_table")
+    suspend fun getAllTransactionsForBackup(): List<Transaction>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(transactions: List<Transaction>)
 
 }
