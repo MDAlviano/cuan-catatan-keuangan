@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import com.cuan.catatankeuangan.data.local.dao.ProductDao
+import com.cuan.catatankeuangan.data.local.entities.Category
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -25,11 +26,6 @@ class BackupManager(
         if (userEmail.isNullOrEmpty()) return
 
         val products = productDao.getAllProductsForBackup()
-        if (products.isEmpty()) {
-            // Mencegah backup jika tidak ada produk di lokal
-            Toast.makeText(context, "Tidak ada data lokal untuk di-backup", Toast.LENGTH_SHORT).show()
-            return
-        }
         val userRef = db.collection("backups").document(userEmail)
         val productCollection = userRef.collection("products")
 
@@ -39,6 +35,7 @@ class BackupManager(
         for (product in products) {
             var imageUrl: String? = product.imageUri
 
+            // Menyimpan path image local ke firebase
             if (!product.imageUri.isNullOrEmpty() && product.imageUri.startsWith("file://")) {
                 val uri = Uri.parse(product.imageUri)
                 imageUrl = suspendUploadImage(uri, product.id.toString())
@@ -136,4 +133,73 @@ class BackupManager(
             null
         }
     }
+
+    suspend fun backupCategories(userEmail: String?) {
+        if (userEmail.isNullOrEmpty()) return
+
+        val categories = withContext(Dispatchers.IO) {
+            productDao.getAllCategoriesForBackup()
+        }
+        if (categories.isEmpty()) return
+
+        val userRef = db.collection("backups").document(userEmail)
+        val categoryCollection = userRef.collection("categories")
+
+        val existing = categoryCollection.get().await()
+        existing.documents.forEach { it.reference.delete() }
+
+        for (category in categories) {
+            val categoryMap = mapOf(
+                "id" to category.id,
+                "name" to category.name
+            )
+
+            categoryCollection.document(category.id.toString()).set(categoryMap).await()
+        }
+    }
+
+    suspend fun restoreCategories(userEmail: String?) {
+        if (userEmail.isNullOrEmpty()) return
+
+        val snapshot = db.collection("backups")
+            .document(userEmail)
+            .collection("categories")
+            .get()
+            .await()
+
+        val categories = snapshot.documents.mapNotNull { doc ->
+            try {
+                Category(
+                    id = doc.getLong("id")!!.toInt(),
+                    name = doc.getString("name") ?: ""
+                )
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        productDao.insertAllCategories(categories)
+    }
+
+    suspend fun backupAll(userEmail: String?) {
+        if (userEmail.isNullOrEmpty()) return
+
+        val products = productDao.getAllProductsForBackup()
+        if (products.isEmpty()) {
+            // Mencegah backup jika tidak ada produk di lokal
+            Toast.makeText(context, "Tidak ada data lokal untuk di-backup", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        backupCategories(userEmail)
+        backupProducts(userEmail)
+    }
+
+    suspend fun restoreAll(userEmail: String?) {
+        if (userEmail.isNullOrEmpty()) return
+
+        restoreCategories(userEmail)
+        restoreProducts(userEmail)
+    }
+
 }

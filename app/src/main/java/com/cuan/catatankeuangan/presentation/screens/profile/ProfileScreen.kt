@@ -192,7 +192,7 @@ fun ProfileScreen(
                         shape = RoundedCornerShape(25f),
                         onClick = {
                             coroutineScope.launch {
-                                backupManager.backupProducts(email)
+                                backupManager.backupAll(email)
                             }
                         }
                     )
@@ -203,7 +203,7 @@ fun ProfileScreen(
                         shape = RoundedCornerShape(25f),
                         onClick = {
                             coroutineScope.launch {
-                                backupManager.restoreProducts(email)
+                                backupManager.restoreAll(email)
                             }
                         }
                     )

@@ -66,4 +66,11 @@ interface ProductDao {
     @Delete
     suspend fun deleteCategory(category: Category)
 
+    @Query("SELECT * FROM category_table ORDER BY name")
+    suspend fun getAllCategoriesForBackup(): List<Category>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllCategories(categories: List<Category>)
+
+
 }
