@@ -16,6 +16,7 @@ import com.cuan.catatankeuangan.repository.BackupManager
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun BottomNavGraph(

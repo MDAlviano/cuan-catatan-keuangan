@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import androidx.compose.ui.platform.LocalContext
 import com.cuan.catatankeuangan.presentation.utils.FirebaseAuthHelper.auth
 import androidx.navigation.compose.rememberNavController
+import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -48,7 +49,7 @@ fun RegisterScreen(navController: NavController) {
     ) {
         TopBar(
             modifier = Modifier.weight(1f),
-            onClick = { /* TODO */ },
+            onClick = { navController.navigate(BottomBarScreen.Profile.route) },
             text = "Daftar"
         )
         Column(

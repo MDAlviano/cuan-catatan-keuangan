@@ -92,8 +92,10 @@ fun ProfileScreen(
     var showEditProfileScreen by remember {
         mutableStateOf(false)
     }
+    var showBackupDialog by remember { mutableStateOf(false) }
 
     var digimon by remember { mutableStateOf(false) }
+
 
     ProfileEdit(
         editProfileScreen = showEditProfileScreen,
@@ -186,32 +188,28 @@ fun ProfileScreen(
                 )
 
                 if (isLoggedIn) {
+                    Spacer(modifier = Modifier.height(8.dp))
                     ProfileItem(
                         icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
-                        title = "Backup Data",
+                        title = "Backup / Restore",
                         shape = RoundedCornerShape(25f),
                         onClick = {
-                            coroutineScope.launch {
-                                backupManager.backupAll(email)
-                            }
-                        }
-                    )
-
-                    ProfileItem(
-                        icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
-                        title = "Restore Data",
-                        shape = RoundedCornerShape(25f),
-                        onClick = {
-                            coroutineScope.launch {
-                                backupManager.restoreAll(email)
-                            }
+                            showBackupDialog = true
                         }
                     )
                 }
 
+                if (showBackupDialog) {
+                    val email = FirebaseAuth.getInstance().currentUser?.email ?: ""
+                    BackupRestoreDialog(
+                        showDialog = showBackupDialog,
+                        onDismiss = { showBackupDialog = false },
+                        email = email,
+                        backupManager = backupManager
+                    )
+                }
+
             }
-
-
         }
 
         //

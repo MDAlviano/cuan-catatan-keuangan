@@ -53,7 +53,7 @@ fun LoginScreen(navController: NavController) {
     ) {
         TopBar(
             modifier = Modifier.weight(1f),
-            onClick = { navController.navigate(BottomBarScreen.History.route) },
+            onClick = { navController.navigate(BottomBarScreen.Profile.route) },
             text = "Masuk",
         )
         Column(

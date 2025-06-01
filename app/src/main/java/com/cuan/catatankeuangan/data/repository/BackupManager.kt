@@ -242,6 +242,7 @@ class BackupManager(
 
         backupCategories(userEmail)
         backupProducts(userEmail)
+        Toast.makeText(context, "Backup Data Berhasil", Toast.LENGTH_SHORT).show()
     }
 
     suspend fun restoreAll(userEmail: String?) {
@@ -250,6 +251,7 @@ class BackupManager(
         restoreCategories(userEmail)
         restoreProducts(userEmail)
         restoreTransaction(userEmail)
+        Toast.makeText(context, "Restore Data Berhasil", Toast.LENGTH_SHORT).show()
     }
 
 }
