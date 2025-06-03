@@ -36,7 +36,6 @@ import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
-import com.cuan.catatankeuangan.viewmodel.ProfileViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
