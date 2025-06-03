@@ -165,6 +165,7 @@ fun HomeScreen(
         selectedTransaction?.let {
             TransactionDetails(
                 transactionViewModel = transactionViewModel,
+                productViewModel = productViewModel,
                 transaction = it,
                 showDialog = showTransactionDetails,
                 onDismiss = { showTransactionDetails = false }

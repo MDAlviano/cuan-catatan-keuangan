@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -26,16 +25,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
 import com.cuan.catatankeuangan.R
-import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.domain.model.ProductReportRejection
 import com.cuan.catatankeuangan.presentation.components.TopBar
 import com.cuan.catatankeuangan.presentation.theme.Color1
-import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 

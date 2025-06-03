@@ -1,8 +1,10 @@
 package com.cuan.catatankeuangan.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.cuan.catatankeuangan.data.local.entities.ProductSnapshotWithQuantity
 import com.cuan.catatankeuangan.data.repository.ReportRepository
 import com.cuan.catatankeuangan.domain.model.CategoryReport
 import com.cuan.catatankeuangan.domain.model.ProductReportRejection
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId

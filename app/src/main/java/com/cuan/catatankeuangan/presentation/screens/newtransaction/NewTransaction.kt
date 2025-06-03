@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
@@ -84,9 +85,13 @@ fun NewTransactionDialog(
 
     val selectedProducts = transactionViewModel.selectedProducts
 
-    val totalHarga = selectedProducts.sumOf { it.product.sellPrice }
-    val totalQuantity = selectedProducts.sumOf { it.quantity }
-    val totalPemasukan = totalHarga * totalQuantity
+    val totalPemasukan by remember(selectedProducts) {
+        derivedStateOf {
+            val totalHarga = selectedProducts.sumOf { it.product.sellPrice }
+            val totalQuantity = selectedProducts.sumOf { it.quantity }
+            totalHarga * totalQuantity
+        }
+    }
 
     val rawTotalAmount = remember { mutableStateOf("") }
 
@@ -97,8 +102,9 @@ fun NewTransactionDialog(
 
     LaunchedEffect(selectedProducts) {
         if (selectedProducts.isNotEmpty()) {
-            totalAmountField = TextFieldValue(totalPemasukan.toString())
-            rawTotalAmount.value = totalPemasukan.toString()
+            val newValue = totalPemasukan.toString()
+            totalAmountField = TextFieldValue(newValue)
+            rawTotalAmount.value = newValue
         }
     }
 
