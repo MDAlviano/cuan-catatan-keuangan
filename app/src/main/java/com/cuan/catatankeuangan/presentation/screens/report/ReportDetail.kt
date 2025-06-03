@@ -30,6 +30,7 @@ import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
 import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Product
+import com.cuan.catatankeuangan.domain.model.ProductReportRejection
 import com.cuan.catatankeuangan.presentation.components.TopBar
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
@@ -38,19 +39,18 @@ import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 
 @Composable
 fun ReportDetail(
-    product: Product,
+    productReportRejection: ProductReportRejection,
     showDialog: Boolean,
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
 
     val detailProduct = mapOf(
-        "Produk" to product.name,
-        "Harga" to formatAsCurrency(product.sellPrice),
+        "Produk" to productReportRejection.productName,
+        "Harga" to formatAsCurrency(productReportRejection.sellPrice),
         "Produk Terjual" to "15 Unit",
         "Total Penjualan" to "Rp50.000",
         "Total Modal" to "Rp30.000",
-        "Waktu" to "Sen, 25/02/25",
     )
 
     if (showDialog) {
@@ -71,11 +71,11 @@ fun ReportDetail(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Image(
-                        painter = if (product.imageUri == null) {
+                        painter = if (productReportRejection.productImageUri == null) {
                             painterResource(id = R.drawable.profile)
                         } else {
                             rememberAsyncImagePainter(
-                                model = product.imageUri
+                                model = productReportRejection.productImageUri
                             )
                         },
                         contentDescription = "Product image",
@@ -133,7 +133,7 @@ fun ReportDetail(
                             )
                             Text(
                                 modifier = Modifier.weight(1f),
-                                text = formatAsCurrency(product.sellPrice - product.buyPrice),
+                                text = formatAsCurrency(productReportRejection.totalProfit),
                                 textAlign = TextAlign.End,
                                 color = Color.White,
                                 fontWeight = FontWeight.Medium

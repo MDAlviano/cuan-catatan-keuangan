@@ -9,12 +9,14 @@ import com.cuan.catatankeuangan.presentation.screens.main.MainScreen
 import com.cuan.catatankeuangan.presentation.theme.CuanTheme
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
+import com.cuan.catatankeuangan.viewmodel.ReportViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 class MainActivity : ComponentActivity() {
     private val transactionViewModel: TransactionViewModel by viewModels()
     private val productViewModel: ProductViewModel by viewModels()
     private val bookViewModel: BookViewModel by viewModels()
+    private val reportViewModel: ReportViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +35,7 @@ class MainActivity : ComponentActivity() {
 //                    HomeScreen(transactionViewModel)
 ////                    ProductScreen()
 //                }
-                MainScreen(transactionViewModel, productViewModel, bookViewModel)
+                MainScreen(transactionViewModel, productViewModel, bookViewModel, reportViewModel)
             }
         }
     }
