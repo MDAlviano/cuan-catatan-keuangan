@@ -1,8 +1,10 @@
 package com.cuan.catatankeuangan.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.cuan.catatankeuangan.data.local.entities.ProductSnapshotWithQuantity
 import com.cuan.catatankeuangan.data.repository.ReportRepository
 import com.cuan.catatankeuangan.domain.model.CategoryReport
 import com.cuan.catatankeuangan.domain.model.ProductReportRejection
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -74,38 +77,38 @@ class ReportViewModel(application: Application): AndroidViewModel(application) {
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val categoryReport: StateFlow<List<CategoryReport>> =
-        combine(
-            repository.getCategoryReport(),
-            _selectedDate,
-            _startDate,
-            _endDate,
-            _categoryName
-        ) { reports, selectedDate, startDate, endDate, categoryName ->
+//    val categoryReport: StateFlow<List<CategoryReport>> =
+//        combine(
+//            repository.getCategoryReport(),
+//            _selectedDate,
+//            _startDate,
+//            _endDate,
+//            _categoryName
+//        ) { reports, selectedDate, startDate, endDate, categoryName ->
+//
+//            reports.filter { report ->
+//                val reportDate = report.latestTransactionTime?.toLocalDate()
+//
+//                val matchesDate = when {
+//                    selectedDate != null -> reportDate == selectedDate
+//                    startDate != null && endDate != null -> reportDate!! in startDate..endDate
+//                    else -> true
+//                }
+//
+//                val matchesName = categoryName.isNullOrBlank() ||
+//                        report.categoryName.contains(categoryName, ignoreCase = true)
+//
+//                matchesDate && matchesName
+//            }
+//        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-            reports.filter { report ->
-                val reportDate = report.latestTransactionTime?.toLocalDate()
-
-                val matchesDate = when {
-                    selectedDate != null -> reportDate == selectedDate
-                    startDate != null && endDate != null -> reportDate!! in startDate..endDate
-                    else -> true
-                }
-
-                val matchesName = categoryName.isNullOrBlank() ||
-                        report.categoryName.contains(categoryName, ignoreCase = true)
-
-                matchesDate && matchesName
-            }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    val totalIncome: StateFlow<Int> = categoryReport.map { list ->
-        list.sumOf { it.totalIncome }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
-
-    val totalExpense: StateFlow<Int> = categoryReport.map { list ->
-        list.sumOf { it.totalExpense }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+//    val totalIncome: StateFlow<Int> = categoryReport.map { list ->
+//        list.sumOf { it.totalIncome }
+//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+//
+//    val totalExpense: StateFlow<Int> = categoryReport.map { list ->
+//        list.sumOf { it.totalExpense }
+//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     private fun Long.toLocalDate(): LocalDate {
         return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDate()
