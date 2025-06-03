@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -27,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,11 +47,15 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.cuan.catatankeuangan.R
+import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.data.local.entities.TransactionType
+import com.cuan.catatankeuangan.domain.model.SelectedProduct
 import com.cuan.catatankeuangan.presentation.components.CurrencyTextField
 import com.cuan.catatankeuangan.presentation.components.CustomTextField
+import com.cuan.catatankeuangan.presentation.components.SelectedTransactionProductCard
 import com.cuan.catatankeuangan.presentation.components.TopBar
+import com.cuan.catatankeuangan.presentation.components.TransactionProductCard
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
@@ -64,13 +72,18 @@ fun NewTransactionDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
-
     val context = LocalContext.current
     val currentTime = System.currentTimeMillis()
+
+    val categoryList by productViewModel.allCategories.observeAsState(initial = emptyList())
 
     var selectedType by remember { mutableStateOf("Pemasukan") }
     var totalAmountField by remember { mutableStateOf(TextFieldValue("")) }
     var description by remember { mutableStateOf("") }
+
+//    val selectedProducts = remember { mutableStateListOf<Product>() }
+
+    val selectedProducts = transactionViewModel.selectedProducts
 
     val rawTotalAmount = remember { mutableStateOf("") }
 
@@ -93,7 +106,11 @@ fun NewTransactionDialog(
                     SelectProductSheet(
                         sheetState = sheetState,
                         onDismiss = { showProductSheet = false },
-                        productViewModel
+                        productViewModel = productViewModel,
+                        transactionViewModel = transactionViewModel,
+                        onProductSelected = { product ->
+                            showProductSheet = false
+                        }
                     )
                 }
 
@@ -281,7 +298,9 @@ fun NewTransactionDialog(
                                     }
                                 }
                                 Button(
-                                    onClick = { /*TODO*/ },
+                                    onClick = {
+                                        transactionViewModel.clearSelectedProducts()
+                                    },
                                     shape = RoundedCornerShape(8.dp),
                                     border = BorderStroke(1.dp, Color3),
                                     contentPadding = PaddingValues(8.dp),
@@ -303,18 +322,23 @@ fun NewTransactionDialog(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-//                            LazyRow(
-//                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-//                                modifier = Modifier.height(240.dp)
-//                            ) {
-//                                items(2) {
-//                                    TransactionProductCard()
-//                                }
-//                            }
+                            // ini adalah list produk yang sudah ditambahkan
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.height(240.dp)
+                            ) {
+                                items(selectedProducts) { product ->
+                                    SelectedTransactionProductCard(
+                                        product = product.product,
+                                        quantity = product.quantity
+                                    )
+                                }
+                            }
                         }
 
                         Spacer(modifier = Modifier.weight(1f))
 
+                        // button untuk menyimpan transaksi
                         Button(
                             onClick = {
                                 val totalAmount = rawTotalAmount.value.toLongOrNull() ?: 0L
@@ -325,7 +349,6 @@ fun NewTransactionDialog(
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } else {
-
                                     // Add transaction to database
                                     val transaction = Transaction(
                                         id = 0,
@@ -338,12 +361,13 @@ fun NewTransactionDialog(
                                         total = rawTotalAmount.value.toLongOrNull() ?: 0L,
                                         timestamp = currentTime
                                     )
-                                    transactionViewModel.addTransaction(transaction)
-                                    rawTotalAmount.value = ""
-                                    totalAmountField = TextFieldValue("")
-                                    description = ""
-
-                                    onConfirm()
+                                    transactionViewModel.saveTransactionAndProducts(transaction) {
+                                        rawTotalAmount.value = ""
+                                        totalAmountField = TextFieldValue("")
+                                        description = ""
+                                        transactionViewModel.clearSelectedProducts()
+                                        onConfirm()
+                                    }
                                 }
                             },
                             shape = RoundedCornerShape(8.dp),
