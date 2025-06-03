@@ -61,6 +61,8 @@ fun SelectProductSheet(
     transactionViewModel: TransactionViewModel,
     onProductSelected: (Product) -> Unit
 ) {
+    transactionViewModel.refreshTrigger.value
+
     var textFieldValue by remember { mutableStateOf("") }
 
     val productList by productViewModel.allProducts.observeAsState(initial = emptyList())

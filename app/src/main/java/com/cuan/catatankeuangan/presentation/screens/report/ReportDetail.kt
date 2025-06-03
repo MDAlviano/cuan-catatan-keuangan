@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
@@ -48,9 +50,9 @@ fun ReportDetail(
     val detailProduct = mapOf(
         "Produk" to productReportRejection.productName,
         "Harga" to formatAsCurrency(productReportRejection.sellPrice),
-        "Produk Terjual" to "15 Unit",
-        "Total Penjualan" to "Rp50.000",
-        "Total Modal" to "Rp30.000",
+        "Produk Terjual" to productReportRejection.totalSold.toString(),
+        "Total Penjualan" to formatAsCurrency(productReportRejection.totalSold.times(productReportRejection.sellPrice)),
+        "Total Modal" to formatAsCurrency(productReportRejection.totalSold.times(productReportRejection.buyPrice)),
     )
 
     if (showDialog) {
@@ -81,17 +83,21 @@ fun ReportDetail(
                         contentDescription = "Product image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .height(70.dp)
-                            .width(70.dp)
+                            .height(120.dp)
+                            .width(120.dp)
                             .clip(RoundedCornerShape(10)),
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Column {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
                         for ((index, content) in detailProduct.entries.withIndex()) {
                             Row(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp, vertical = 14.dp)
                             ) {
                                 Text(
                                     modifier = Modifier.weight(1f),
@@ -105,25 +111,17 @@ fun ReportDetail(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(4.dp))
-
                             if (index <= detailProduct.size - 2) {
-                                HorizontalDivider(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    thickness = 1.dp,
-                                    color = Color3
-                                )
+                                HorizontalDivider(thickness = (0.5).dp, color = Color.LightGray)
                             }
-
-                            Spacer(modifier = Modifier.height(4.dp))
                         }
 
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .clip(RoundedCornerShape(size = 14.dp))
                                 .background(Color1)
-                                .clip(RoundedCornerShape(size = 10.dp))
-                                .padding(all = 12.dp)
+                                .padding(horizontal = 8.dp, vertical = 14.dp)
                         ) {
                             Text(
                                 modifier = Modifier.weight(1f),

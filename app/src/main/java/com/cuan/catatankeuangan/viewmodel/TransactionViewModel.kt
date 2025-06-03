@@ -1,6 +1,9 @@
 package com.cuan.catatankeuangan.viewmodel
 
 import android.app.Application
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -17,11 +20,19 @@ import kotlinx.coroutines.withContext
 class TransactionViewModel(application: Application): AndroidViewModel(application) {
     private val transactionDao = MainDatabase.getMainDatabase(application).transactionDao()
     private val transactionRepository: TransactionRepository = TransactionRepository(application)
-    private val _selectedProducts = mutableListOf<SelectedProduct>()
+
+    private val _selectedProducts = mutableStateListOf<SelectedProduct>()
+    private val _refreshTrigger = mutableStateOf(Unit)
 
     val allTransaction: LiveData<List<Transaction>> = transactionDao.getAllTransaction()
     val todayTransactions: LiveData<List<Transaction>> = transactionDao.getTodayTransactions()
-    val selectedProducts: List<SelectedProduct> = _selectedProducts
+
+    val selectedProducts: List<SelectedProduct> get() = _selectedProducts
+    val refreshTrigger: State<Unit> get() = _refreshTrigger
+
+    fun triggerRefresh() {
+        _refreshTrigger.value = Unit
+    }
 
     fun addTransaction(transaction: Transaction) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -39,7 +50,8 @@ class TransactionViewModel(application: Application): AndroidViewModel(applicati
         val existing = _selectedProducts.find { it.product.id == product.id }
         if (existing != null) {
             if (existing.quantity < product.stock) {
-                existing.quantity++
+                val index = _selectedProducts.indexOf(existing)
+                _selectedProducts[index] = existing.copy(quantity = existing.quantity + 1)
             }
         } else {
             _selectedProducts.add(SelectedProduct(product, 1))
@@ -50,7 +62,8 @@ class TransactionViewModel(application: Application): AndroidViewModel(applicati
         val existing = _selectedProducts.find { it.product.id == product.id }
         if (existing != null) {
             if (existing.quantity > 1) {
-                existing.quantity--
+                val index = _selectedProducts.indexOf(existing)
+                _selectedProducts[index] = existing.copy(quantity = existing.quantity - 1)
             } else {
                 _selectedProducts.remove(existing)
             }
@@ -73,7 +86,7 @@ class TransactionViewModel(application: Application): AndroidViewModel(applicati
 
     fun saveTransactionAndProducts(transaction: Transaction, onDone: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            val transactionId = addTransaction(transaction).toString().toInt()
+            val transactionId = transactionRepository.addTransaksi(transaction).toString().toInt() // java.lang.NumberFormatException: For input string: "kotlin.Unit"
             saveProductSnapshotAndCrossRefs(transactionId)
 
             withContext(Dispatchers.Main) {

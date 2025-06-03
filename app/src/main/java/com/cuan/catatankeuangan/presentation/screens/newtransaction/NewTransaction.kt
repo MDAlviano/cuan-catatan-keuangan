@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
@@ -72,18 +73,20 @@ fun NewTransactionDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
+    transactionViewModel.refreshTrigger.value
+
     val context = LocalContext.current
     val currentTime = System.currentTimeMillis()
-
-    val categoryList by productViewModel.allCategories.observeAsState(initial = emptyList())
 
     var selectedType by remember { mutableStateOf("Pemasukan") }
     var totalAmountField by remember { mutableStateOf(TextFieldValue("")) }
     var description by remember { mutableStateOf("") }
 
-//    val selectedProducts = remember { mutableStateListOf<Product>() }
-
     val selectedProducts = transactionViewModel.selectedProducts
+
+    val totalHarga = selectedProducts.sumOf { it.product.sellPrice }
+    val totalQuantity = selectedProducts.sumOf { it.quantity }
+    val totalPemasukan = totalHarga * totalQuantity
 
     val rawTotalAmount = remember { mutableStateOf("") }
 
@@ -91,6 +94,13 @@ fun NewTransactionDialog(
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false
     )
+
+    LaunchedEffect(selectedProducts) {
+        if (selectedProducts.isNotEmpty()) {
+            totalAmountField = TextFieldValue(totalPemasukan.toString())
+            rawTotalAmount.value = totalPemasukan.toString()
+        }
+    }
 
     if (showDialog) {
         Dialog(
@@ -246,7 +256,9 @@ fun NewTransactionDialog(
                             label = if (selectedType == "Pemasukan") "Total Pemasukan" else "Total Pengeluaran",
                             fieldValue = totalAmountField,
                             rawValue = rawTotalAmount,
-                            onValueChange = { totalAmountField = it }
+                            onValueChange = { newValue ->
+                                totalAmountField = newValue
+                            }
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -300,6 +312,7 @@ fun NewTransactionDialog(
                                 Button(
                                     onClick = {
                                         transactionViewModel.clearSelectedProducts()
+                                        transactionViewModel.triggerRefresh()
                                     },
                                     shape = RoundedCornerShape(8.dp),
                                     border = BorderStroke(1.dp, Color3),
@@ -327,10 +340,10 @@ fun NewTransactionDialog(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier.height(240.dp)
                             ) {
-                                items(selectedProducts) { product ->
+                                items(selectedProducts) { selectedItem ->
                                     SelectedTransactionProductCard(
-                                        product = product.product,
-                                        quantity = product.quantity
+                                        product = selectedItem.product,
+                                        quantity = selectedItem.quantity
                                     )
                                 }
                             }

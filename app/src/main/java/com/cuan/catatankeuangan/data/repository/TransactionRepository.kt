@@ -33,6 +33,11 @@ class TransactionRepository(context: Context) {
         return transactionDao.getTodayTransactions()
     }
 
+    suspend fun addTransaksi(transaction: Transaction): Long {
+        return transactionDao.addTransaction(transaction)
+    }
+
+
     suspend fun saveSelectedProducts(
         transactionId: Int,
         selectedProducts: List<SelectedProduct>

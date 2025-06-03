@@ -11,5 +11,5 @@ class ReportRepository(context: Context) {
 
     fun getSalesReport(): Flow<List<ProductReportRejection>> = reportDao.getSalesReport()
 
-    fun getCategoryReport(): Flow<List<CategoryReport>> = reportDao.getCategoryReport()
+//    fun getCategoryReport(): Flow<List<CategoryReport>> = reportDao.getCategoryReport()
 }

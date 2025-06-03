@@ -387,7 +387,10 @@ fun TransactionProductCard(
     category: String,
     onClick: () -> Unit
 ) {
-    val selectedQuantity = transactionViewModel.selectedProducts.find { it.product.id == product.id }?.quantity ?: 0
+    transactionViewModel.refreshTrigger.value
+
+    val selectedQuantity =
+        transactionViewModel.selectedProducts.find { it.product.id == product.id }?.quantity ?: 0
     val outOfStock = product.stock <= 0
 
     val greyScale = if (outOfStock) {
@@ -519,14 +522,20 @@ fun TransactionProductCard(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        IconButton(onClick = { transactionViewModel.decrement(product) }) {
+                        IconButton(onClick = {
+                            transactionViewModel.decrement(product)
+                            transactionViewModel.triggerRefresh()
+                        }) {
                             Icon(Icons.Default.Clear, contentDescription = "Kurangi")
                         }
 
                         Text("$selectedQuantity", fontSize = 14.sp)
 
                         IconButton(
-                            onClick = { transactionViewModel.addOrIncrement(product) },
+                            onClick = {
+                                transactionViewModel.addOrIncrement(product)
+                                transactionViewModel.triggerRefresh()
+                            },
                             enabled = selectedQuantity < product.stock
                         ) {
                             Icon(Icons.Default.Add, contentDescription = "Tambah")
