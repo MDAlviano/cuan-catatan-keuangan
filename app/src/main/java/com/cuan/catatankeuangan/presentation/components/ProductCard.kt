@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
@@ -58,9 +61,11 @@ import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
+import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 import com.cuan.catatankeuangan.presentation.theme.grayScale
 import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
+import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @Composable
 fun ProductCard(
@@ -293,24 +298,106 @@ fun ProductCard(
 }
 
 @Composable
-fun TransactionProductCard(
+fun SelectedTransactionProductCard(
     product: Product,
-    category: String,
+    quantity: Int
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke((0.1).dp, Color.LightGray),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .height(200.dp)
+                .padding(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
+                Image(
+                    painter = if (product.imageUri == null) {
+                        painterResource(id = R.drawable.no_image)
+                    } else {
+                        rememberAsyncImagePainter(
+                            model = product.imageUri
+                        )
+                    },
+                    contentDescription = "Product image",
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                        .clip(RoundedCornerShape(10))
+                )
+                Text(
+                    text = "$quantity Buah",
+                    fontSize = 10.sp,
+                    fontFamily = interFamily,
+                    color = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(4.dp, 6.dp)
+                        .background(Color1, RoundedCornerShape(50))
+                        .padding(4.dp, 0.dp)
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(0.dp, 120.dp)
+                    .padding(4.dp, 4.dp, 4.dp, 4.dp)
+            ) {
+                Text(
+                    text = product.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 24.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = formatAsCurrency(product.sellPrice),
+                        fontSize = 18.sp,
+                        fontFamily = interFamily,
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = 34.sp,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TransactionProductCard(
+    transactionViewModel: TransactionViewModel,
+    product: Product,
     label: String,
+    category: String,
     onClick: () -> Unit
 ) {
+    transactionViewModel.refreshTrigger.value
 
+    val selectedQuantity =
+        transactionViewModel.selectedProducts.find { it.product.id == product.id }?.quantity ?: 0
     val outOfStock = product.stock <= 0
-
-    val enabled = !outOfStock
 
     val greyScale = if (outOfStock) {
         ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
     } else {
         null
     }
-
-
 
     Box(
         modifier = Modifier
@@ -356,7 +443,7 @@ fun TransactionProductCard(
         ) {
             Column(
                 modifier = Modifier
-                    .height(200.dp)
+                    .height(240.dp)
                     .padding(12.dp)
             ) {
                 Box(
@@ -407,6 +494,14 @@ fun TransactionProductCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+                    Text(
+                        text = category,
+                        color = OptionalColor3,
+                        fontSize = 14.sp,
+                        lineHeight = 24.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -420,6 +515,31 @@ fun TransactionProductCard(
                             fontWeight = FontWeight.Medium,
                             lineHeight = 34.sp,
                         )
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        IconButton(onClick = {
+                            transactionViewModel.decrement(product)
+                            transactionViewModel.triggerRefresh()
+                        }) {
+                            Icon(Icons.Default.Clear, contentDescription = "Kurangi")
+                        }
+
+                        Text("$selectedQuantity", fontSize = 14.sp)
+
+                        IconButton(
+                            onClick = {
+                                transactionViewModel.addOrIncrement(product)
+                                transactionViewModel.triggerRefresh()
+                            },
+                            enabled = selectedQuantity < product.stock
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Tambah")
+                        }
                     }
                 }
             }

@@ -81,9 +81,9 @@ fun ReportScreen(
     val categoryList by productViewModel.allCategories.observeAsState(initial = emptyList())
     var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
     val report by reportViewModel.salesReport.collectAsState()
-    val categoryReport by reportViewModel.categoryReport.collectAsState()
-    val totalIncome by reportViewModel.totalIncome.collectAsState()
-    val totalExpense by reportViewModel.totalExpense.collectAsState()
+//    val categoryReport by reportViewModel.categoryReport.collectAsState()
+//    val totalIncome by reportViewModel.totalIncome.collectAsState()
+//    val totalExpense by reportViewModel.totalExpense.collectAsState()
 
     var textFieldValue by remember { mutableStateOf("") }
     var showCategory by remember { mutableStateOf(false) }
@@ -553,7 +553,8 @@ fun ReportScreen(
                         image = painterResource(R.drawable.arrow_up),
                         title = "Pemasukan",
                         titleSize = 12.sp,
-                        value = formatAsCurrency(totalIncome.toLong())
+                        value = formatAsCurrency(0L)
+//                        value = formatAsCurrency(totalIncome.toLong())
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -567,7 +568,8 @@ fun ReportScreen(
                         image = painterResource(R.drawable.arrow_up),
                         title = "Pengeluaran",
                         titleSize = 12.sp,
-                        value = formatAsCurrency(totalExpense.toLong())
+                        value = formatAsCurrency(0L)
+//                        value = formatAsCurrency(totalExpense.toLong())
                     )
                 }
 
@@ -614,24 +616,23 @@ fun ReportScreen(
                         )
                     }
                 } else {
-                    LazyVerticalStaggeredGrid(
-                        state = gridState,
-                        columns = StaggeredGridCells.Adaptive(160.dp),
-                        verticalItemSpacing = 10.dp,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .padding(vertical = 6.dp)
-                    ) {
-                        items(categoryReport) { reportItem ->
-                            ReportCategoryCard(
-                                categoryReport = reportItem,
-                            )
-                        }
-                    }
+//                    LazyVerticalStaggeredGrid(
+//                        state = gridState,
+//                        columns = StaggeredGridCells.Adaptive(160.dp),
+//                        verticalItemSpacing = 10.dp,
+//                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+//                        modifier = Modifier
+//                            .wrapContentHeight()
+//                            .padding(vertical = 6.dp)
+//                    ) {
+//                        items(categoryReport) { reportItem ->
+//                            ReportCategoryCard(
+//                                categoryReport = reportItem,
+//                            )
+//                        }
                 }
-
             }
+
         }
     }
 }

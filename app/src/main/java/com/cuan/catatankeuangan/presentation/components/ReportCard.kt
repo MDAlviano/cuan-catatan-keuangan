@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,7 +71,7 @@ fun ReportCategoryCard(categoryReport: CategoryReport, modifier: Modifier = Modi
                 Spacer(modifier = Modifier.width(8.dp))
                 Column(verticalArrangement = Arrangement.Center) {
                     Text(
-                        text = categoryReport.categoryName,
+                        text = categoryReport.categoryName.toString(),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -148,6 +149,7 @@ fun ReportCard(
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(4.dp, 6.dp)
+                        .clip(RoundedCornerShape(size = 12.dp))
                         .background(Color1)
                         .padding(6.dp, 2.dp)
                 )
@@ -185,25 +187,32 @@ fun ReportCard(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
                 ) {
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .border(width = 1.dp, color = Color1)
+                            .border(width = 1.dp, color = Color1, shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
                     ) {
                         Text(
+                            modifier = Modifier.padding(start = 8.dp),
                             text = "Keuntungan",
+                            fontSize = 10.sp,
                             color = Color1
                         )
                     }
                     Box(
                         modifier = Modifier
                             .weight(1f)
+                            .clip(RoundedCornerShape(topEnd = 10.dp, bottomEnd = 10.dp))
                             .background(Color1)
+                            .border(width = 1.dp, color = Color1, shape = RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
                     ) {
                         Text(
+                            modifier = Modifier.fillMaxWidth().padding(end = 8.dp),
                             text = formatAsCurrency(productReportRejection.totalProfit),
+                            textAlign = TextAlign.End,
+                            fontSize = 10.sp,
+                            color = Color.White
                         )
                     }
                 }

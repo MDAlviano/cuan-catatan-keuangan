@@ -50,14 +50,19 @@ import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
+import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectProductSheet(
     sheetState: SheetState,
     onDismiss: () -> Unit,
-    productViewModel: ProductViewModel
+    productViewModel: ProductViewModel,
+    transactionViewModel: TransactionViewModel,
+    onProductSelected: (Product) -> Unit
 ) {
+    transactionViewModel.refreshTrigger.value
+
     var textFieldValue by remember { mutableStateOf("") }
 
     val productList by productViewModel.allProducts.observeAsState(initial = emptyList())
@@ -166,11 +171,15 @@ fun SelectProductSheet(
                         .padding(vertical = 6.dp, horizontal = 24.dp)
                 ) {
                     items(filteredProducts) { product ->
+                        // card masih salah dan masih belum sesuai
                         TransactionProductCard(
+                            transactionViewModel = transactionViewModel,
                             product = product,
-                            onClick = { /*TODO*/ },
+                            onClick = {
+                                onProductSelected(product)
+                            },
                             label = "Stok: ${product.stock}",
-                            category = "",
+                            category = categoryList.find { it.id == product.categoryId }?.name ?: "-",
                         )
                     }
                 }

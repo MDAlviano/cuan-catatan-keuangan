@@ -34,20 +34,20 @@ interface ReportDao {
     """)
     fun getSalesReport(): Flow<List<ProductReportRejection>>
 
-    @Query("""
-    SELECT 
-        c.id AS categoryId,
-        c.name AS categoryName,
-        COUNT(DISTINCT t.id) AS totalTransactions,
-        SUM(CASE WHEN t.transactionType = 'INCOME' THEN tp.quantity * ps.sellPrice ELSE 0 END) AS totalIncome,
-        SUM(CASE WHEN t.transactionType = 'EXPENSE' THEN tp.quantity * ps.buyPrice ELSE 0 END) AS totalExpense,
-        MAX(t.timestamp) AS latestTransactionTime -- tambahkan untuk bantu filter di VM
-    FROM transaction_table t
-    JOIN transaction_product_cross_ref_table tp ON t.id = tp.transactionId
-    JOIN product_snapshot_table ps ON tp.snapshotId = ps.id
-    JOIN product_table p ON ps.productId = p.id
-    LEFT JOIN category_table c ON p.categoryId = c.id
-    GROUP BY c.id
-""")
-    fun getCategoryReport(): Flow<List<CategoryReport>>
+//    @Query("""
+//    SELECT
+//        c.id AS categoryId,
+//        c.name AS categoryName,
+//        COUNT(DISTINCT t.id) AS totalTransactions,
+//        SUM(CASE WHEN t.transactionType = 'INCOME' THEN tp.quantity * ps.sellPrice ELSE 0 END) AS totalIncome,
+//        SUM(CASE WHEN t.transactionType = 'EXPENSE' THEN tp.quantity * ps.buyPrice ELSE 0 END) AS totalExpense,
+//        MAX(t.timestamp) AS latestTransactionTime -- tambahkan untuk bantu filter di VM
+//    FROM transaction_table t
+//    JOIN transaction_product_cross_ref_table tp ON t.id = tp.transactionId
+//    JOIN product_snapshot_table ps ON tp.snapshotId = ps.id
+//    JOIN product_table p ON ps.productId = p.id
+//    LEFT JOIN category_table c ON p.categoryId = c.id
+//    GROUP BY c.id
+//""")
+//    fun getCategoryReport(): Flow<List<CategoryReport>>
 }

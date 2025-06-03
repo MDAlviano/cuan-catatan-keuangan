@@ -74,38 +74,38 @@ class ReportViewModel(application: Application): AndroidViewModel(application) {
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val categoryReport: StateFlow<List<CategoryReport>> =
-        combine(
-            repository.getCategoryReport(),
-            _selectedDate,
-            _startDate,
-            _endDate,
-            _categoryName
-        ) { reports, selectedDate, startDate, endDate, categoryName ->
+//    val categoryReport: StateFlow<List<CategoryReport>> =
+//        combine(
+//            repository.getCategoryReport(),
+//            _selectedDate,
+//            _startDate,
+//            _endDate,
+//            _categoryName
+//        ) { reports, selectedDate, startDate, endDate, categoryName ->
+//
+//            reports.filter { report ->
+//                val reportDate = report.latestTransactionTime?.toLocalDate()
+//
+//                val matchesDate = when {
+//                    selectedDate != null -> reportDate == selectedDate
+//                    startDate != null && endDate != null -> reportDate!! in startDate..endDate
+//                    else -> true
+//                }
+//
+//                val matchesName = categoryName.isNullOrBlank() ||
+//                        report.categoryName.contains(categoryName, ignoreCase = true)
+//
+//                matchesDate && matchesName
+//            }
+//        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-            reports.filter { report ->
-                val reportDate = report.latestTransactionTime?.toLocalDate()
-
-                val matchesDate = when {
-                    selectedDate != null -> reportDate == selectedDate
-                    startDate != null && endDate != null -> reportDate!! in startDate..endDate
-                    else -> true
-                }
-
-                val matchesName = categoryName.isNullOrBlank() ||
-                        report.categoryName.contains(categoryName, ignoreCase = true)
-
-                matchesDate && matchesName
-            }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    val totalIncome: StateFlow<Int> = categoryReport.map { list ->
-        list.sumOf { it.totalIncome }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
-
-    val totalExpense: StateFlow<Int> = categoryReport.map { list ->
-        list.sumOf { it.totalExpense }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+//    val totalIncome: StateFlow<Int> = categoryReport.map { list ->
+//        list.sumOf { it.totalIncome }
+//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+//
+//    val totalExpense: StateFlow<Int> = categoryReport.map { list ->
+//        list.sumOf { it.totalExpense }
+//    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
     private fun Long.toLocalDate(): LocalDate {
         return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDate()
