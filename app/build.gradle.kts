@@ -104,6 +104,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
 
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BOM, don't specify versions in Firebase dependencies

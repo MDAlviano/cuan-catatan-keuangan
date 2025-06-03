@@ -15,7 +15,9 @@ import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.File
-
+import androidx.work.*
+import com.cuan.catatankeuangan.data.repository.AutoBackupWorker
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     private val transactionViewModel: TransactionViewModel by viewModels()
@@ -38,7 +40,12 @@ class MainActivity : ComponentActivity() {
             cloudinaryService = cloudinary,
             context = this
         )
-
+        // Jadwalkan auto backup
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val email = prefs.getString("userEmail", null)
+        if (!email.isNullOrEmpty()) {
+            scheduleAutoBackup(email)
+        }
 
         val imageFile = File("/path/to/image.jpg")
         productViewModel.uploadImageToCloudinary(imageFile)
@@ -51,4 +58,26 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun scheduleAutoBackup(email: String) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val inputData = Data.Builder()
+            .putString("userEmail", email)
+            .build()
+
+        val request = PeriodicWorkRequestBuilder<AutoBackupWorker>(1, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .setInputData(inputData)
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "daily_backup",
+            ExistingPeriodicWorkPolicy.KEEP,
+            request
+        )
+    }
+
 }
