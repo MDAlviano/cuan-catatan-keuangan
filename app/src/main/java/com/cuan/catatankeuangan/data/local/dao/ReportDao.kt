@@ -2,6 +2,8 @@ package com.cuan.catatankeuangan.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
+import com.cuan.catatankeuangan.data.local.entities.ProductSnapshotWithQuantity
 import com.cuan.catatankeuangan.domain.model.CategoryReport
 import com.cuan.catatankeuangan.domain.model.ProductReportRejection
 import kotlinx.coroutines.flow.Flow
@@ -33,6 +35,17 @@ interface ReportDao {
         ORDER BY totalProfit DESC
     """)
     fun getSalesReport(): Flow<List<ProductReportRejection>>
+
+    @Transaction
+    @Query("""
+    SELECT product_snapshot_table.*, transaction_product_cross_ref_table.quantity 
+    FROM product_snapshot_table 
+    INNER JOIN transaction_product_cross_ref_table 
+    ON product_snapshot_table.id = transaction_product_cross_ref_table.snapshotId 
+    WHERE transaction_product_cross_ref_table.transactionId = :transactionId
+""")
+    suspend fun getSnapshotsForTransaction(transactionId: Int): List<ProductSnapshotWithQuantity>
+
 
 //    @Query("""
 //    SELECT

@@ -526,7 +526,7 @@ fun TransactionProductCard(
                             transactionViewModel.decrement(product)
                             transactionViewModel.triggerRefresh()
                         }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Kurangi")
+                            Icon(painter = painterResource(R.drawable.rounded_horizontal_rule), contentDescription = "Kurangi")
                         }
 
                         Text("$selectedQuantity", fontSize = 14.sp)
@@ -538,7 +538,7 @@ fun TransactionProductCard(
                             },
                             enabled = selectedQuantity < product.stock
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "Tambah")
+                            Icon(painter = painterResource(R.drawable.rounded_add), contentDescription = "Tambah")
                         }
                     }
                 }

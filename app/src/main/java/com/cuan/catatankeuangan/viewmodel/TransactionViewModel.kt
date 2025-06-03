@@ -10,7 +10,9 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
 import com.cuan.catatankeuangan.data.local.database.MainDatabase
 import com.cuan.catatankeuangan.data.local.entities.Product
+import com.cuan.catatankeuangan.data.local.entities.ProductSnapshotWithQuantity
 import com.cuan.catatankeuangan.data.local.entities.Transaction
+import com.cuan.catatankeuangan.data.repository.ReportRepository
 import com.cuan.catatankeuangan.data.repository.TransactionRepository
 import com.cuan.catatankeuangan.domain.model.SelectedProduct
 import kotlinx.coroutines.Dispatchers
@@ -20,13 +22,16 @@ import kotlinx.coroutines.withContext
 class TransactionViewModel(application: Application): AndroidViewModel(application) {
     private val transactionDao = MainDatabase.getMainDatabase(application).transactionDao()
     private val transactionRepository: TransactionRepository = TransactionRepository(application)
+    private val reportRepository: ReportRepository = ReportRepository(application)
 
     private val _selectedProducts = mutableStateListOf<SelectedProduct>()
     private val _refreshTrigger = mutableStateOf(Unit)
+    private val _productSnapshots = mutableStateListOf<ProductSnapshotWithQuantity>()
 
     val allTransaction: LiveData<List<Transaction>> = transactionDao.getAllTransaction()
     val todayTransactions: LiveData<List<Transaction>> = transactionDao.getTodayTransactions()
 
+    val productSnapshots: List<ProductSnapshotWithQuantity> = _productSnapshots
     val selectedProducts: List<SelectedProduct> get() = _selectedProducts
     val refreshTrigger: State<Unit> get() = _refreshTrigger
 
@@ -93,6 +98,14 @@ class TransactionViewModel(application: Application): AndroidViewModel(applicati
                 clearSelectedProducts()
                 onDone()
             }
+        }
+    }
+
+    fun loadProductSnapshots(transactionId: Int) {
+        viewModelScope.launch {
+            val snapshots = reportRepository.getProductSnapshotsForTransaction(transactionId)
+            _productSnapshots.clear()
+            _productSnapshots.addAll(snapshots)
         }
     }
 
