@@ -86,7 +86,7 @@ fun BackupRestoreDialog(
                                 )
                         ) {
                             Text(
-                                "Backup Data",
+                                "Backup",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = ralewayFamily,
@@ -96,7 +96,7 @@ fun BackupRestoreDialog(
 
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Restore Semua Data (Buku, Transaksi, Produk)",
+                            text = "Pulihkan Semua Data (Buku, Transaksi, Produk)",
                             fontWeight = FontWeight.SemiBold,
                             color = Color2
                         )
@@ -120,7 +120,7 @@ fun BackupRestoreDialog(
                                 )
                         ) {
                             Text(
-                                "Restore Data",
+                                "Restore",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = ralewayFamily,

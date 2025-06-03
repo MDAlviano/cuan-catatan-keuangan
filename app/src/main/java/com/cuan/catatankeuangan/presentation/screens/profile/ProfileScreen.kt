@@ -99,7 +99,10 @@ fun ProfileScreen(
 
     ProfileEdit(
         editProfileScreen = showEditProfileScreen,
-        onDismiss = { showEditProfileScreen = false }
+        onDismiss = { showEditProfileScreen = false },
+        currentName = name,
+        email = currentUserEmail ?: "",
+        onNameUpdated = { updatedName -> name = updatedName }
     )
 
     BookList(
@@ -138,20 +141,20 @@ fun ProfileScreen(
                     .fillMaxWidth()
                     .padding(24.dp, 120.dp, 24.dp, 12.dp)
             ) {
-                Text(
-                    text = "Akun",
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color2
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-                ProfileItem(
-                    icon = painterResource(R.drawable.profil_ini_buat_tombol_di_skrin_profil),
-                    title = "Edit Profil",
-                    shape = RoundedCornerShape(25f),
-                    onClick = { showEditProfileScreen = true }
-                )
-
+                if (isLoggedIn) {
+                    Text(
+                        text = "Akun",
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color2
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ProfileItem(
+                        icon = painterResource(R.drawable.profil_ini_buat_tombol_di_skrin_profil),
+                        title = "Edit Profil",
+                        shape = RoundedCornerShape(25f),
+                        onClick = { showEditProfileScreen = true }
+                    )
+                }
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
@@ -390,15 +393,13 @@ fun SectionCardWithTwoButtons(
         ProfileItem(
             icon = painterResource(R.drawable.icon_buku_pandun_skrin_profil),
             title = "Panduan",
-            shape = if (!isLoggedIn) RoundedCornerShape(25f) else RoundedCornerShape(topStart = 25f, topEnd = 25f),
+            shape = RoundedCornerShape(topStart = 25f, topEnd = 25f),
             onClick = { /* Navigate */ }
         )
 
         if (isLoggedIn) {
-            // Jika user login, tampilkan tombol logout
             LogoutItem(onClick = onLogoutOrLoginClick)
         } else {
-            // Jika belum login, tampilkan tombol login
             LoginItem(onClick = onLogoutOrLoginClick)
         }
 
