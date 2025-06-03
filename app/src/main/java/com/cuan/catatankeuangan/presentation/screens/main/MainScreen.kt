@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -16,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -32,6 +34,7 @@ import com.cuan.catatankeuangan.presentation.navigation.BottomNavGraph
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
+import com.cuan.catatankeuangan.viewmodel.ReportViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -39,7 +42,8 @@ import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 fun MainScreen(
     transactionViewModel: TransactionViewModel,
     productViewModel: ProductViewModel,
-    bookViewModel: BookViewModel
+    bookViewModel: BookViewModel,
+    reportViewModel: ReportViewModel
 ) {
     val navController = rememberNavController()
     var bottomNavHeight by remember { mutableStateOf(0.dp) }
@@ -74,7 +78,8 @@ fun MainScreen(
             bottomNavHeight,
             transactionViewModel = transactionViewModel,
             productViewModel = productViewModel,
-            bookViewModel = bookViewModel
+            bookViewModel = bookViewModel,
+            reportViewModel = reportViewModel
         )
     }
 }
@@ -93,6 +98,7 @@ fun BottomBar(
             .fillMaxWidth()
             .padding(top = 22.dp)
             .onSizeChanged { size -> onHeightChanged(size.height) }
+            .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
 //            .padding(horizontal = 24.dp)
     ) {
         screens.forEach { screen ->

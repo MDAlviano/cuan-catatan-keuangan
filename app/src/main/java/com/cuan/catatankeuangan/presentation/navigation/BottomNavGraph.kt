@@ -13,6 +13,7 @@ import com.cuan.catatankeuangan.presentation.screens.profile.ProfileScreen
 import com.cuan.catatankeuangan.presentation.screens.report.ReportScreen
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
+import com.cuan.catatankeuangan.viewmodel.ReportViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @Composable
@@ -21,7 +22,8 @@ fun BottomNavGraph(
     bottomNavHeight: Dp,
     transactionViewModel: TransactionViewModel,
     productViewModel: ProductViewModel,
-    bookViewModel: BookViewModel
+    bookViewModel: BookViewModel,
+    reportViewModel: ReportViewModel
 ) {
     NavHost(
         navController = navController,
@@ -37,7 +39,11 @@ fun BottomNavGraph(
             HistoryScreen(bottomNavHeight, transactionViewModel, productViewModel)
         }
         composable(route = BottomBarScreen.Report.route) {
-            ReportScreen(bottomNavHeight, productViewModel)
+            ReportScreen(
+                bottomNavHeight = bottomNavHeight,
+                productViewModel = productViewModel,
+                reportViewModel = reportViewModel
+            )
         }
         composable(route = BottomBarScreen.Profile.route) {
             ProfileScreen(navController, bottomNavHeight, bookViewModel)
