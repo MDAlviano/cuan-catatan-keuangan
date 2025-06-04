@@ -8,8 +8,7 @@ import androidx.activity.viewModels
 import com.cuan.catatankeuangan.data.local.database.MainDatabase
 import com.cuan.catatankeuangan.presentation.screens.main.MainScreen
 import com.cuan.catatankeuangan.presentation.theme.CuanTheme
-import com.cuan.catatankeuangan.repository.BackupManager
-import com.cuan.catatankeuangan.repository.CloudinaryService
+import com.cuan.catatankeuangan.data.repository.BackupManager
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.ReportViewModel
@@ -26,6 +25,7 @@ class MainActivity : ComponentActivity() {
     private val bookViewModel: BookViewModel by viewModels()
     private val reportViewModel: ReportViewModel by viewModels()
 
+
     private lateinit var backupManager: BackupManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,14 +33,12 @@ class MainActivity : ComponentActivity() {
         val dbInstance = MainDatabase.getInstance(this)
         val productDao = dbInstance.productDao()
         val transactionDao = dbInstance.transactionDao()
-        val cloudinary = CloudinaryService(context = this)
         val firestore = FirebaseFirestore.getInstance()
         backupManager = BackupManager(
             db = firestore,
             productDao = productDao,
             transactionDao = transactionDao,
-            cloudinaryService = cloudinary,
-            context = this
+            context = this,
         )
         // Jadwalkan auto backup
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
@@ -56,7 +54,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CuanTheme {
-                MainScreen(transactionViewModel, productViewModel, bookViewModel, backupManager)
+                MainScreen(
+                    transactionViewModel = transactionViewModel,
+                    productViewModel = productViewModel,
+                    bookViewModel = bookViewModel,
+                    reportViewModel = reportViewModel,
+                    backupManager = backupManager
+                )
             }
         }
     }

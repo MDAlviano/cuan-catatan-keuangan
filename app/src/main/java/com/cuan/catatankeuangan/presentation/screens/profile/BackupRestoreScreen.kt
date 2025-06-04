@@ -23,7 +23,7 @@ import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
-import com.cuan.catatankeuangan.repository.BackupManager
+import com.cuan.catatankeuangan.data.repository.BackupManager
 import kotlinx.coroutines.launch
 
 @Composable

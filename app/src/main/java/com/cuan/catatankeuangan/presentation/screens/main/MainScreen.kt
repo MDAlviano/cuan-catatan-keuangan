@@ -29,10 +29,10 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.cuan.catatankeuangan.data.repository.BackupManager
 import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 import com.cuan.catatankeuangan.presentation.navigation.BottomNavGraph
 import com.cuan.catatankeuangan.presentation.theme.Color2
-import com.cuan.catatankeuangan.repository.BackupManager
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.ReportViewModel
@@ -44,9 +44,8 @@ fun MainScreen(
     transactionViewModel: TransactionViewModel,
     productViewModel: ProductViewModel,
     bookViewModel: BookViewModel,
-    backupManager: BackupManager,
-    bookViewModel: BookViewModel,
-    reportViewModel: ReportViewModel
+    reportViewModel: ReportViewModel,
+    backupManager: BackupManager
 ) {
     val navController = rememberNavController()
     var bottomNavHeight by remember { mutableStateOf(0.dp) }

@@ -10,7 +10,7 @@ import com.cuan.catatankeuangan.data.local.entities.Category
 import com.cuan.catatankeuangan.data.local.entities.CategoryWithProducts
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.data.repository.ProductRepository
-import com.cuan.catatankeuangan.repository.BackupManager
+import com.cuan.catatankeuangan.data.repository.BackupManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

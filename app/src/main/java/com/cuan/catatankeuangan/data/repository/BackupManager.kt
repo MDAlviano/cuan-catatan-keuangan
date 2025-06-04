@@ -1,4 +1,4 @@
-package com.cuan.catatankeuangan.repository
+package com.cuan.catatankeuangan.data.repository
 
 import android.content.Context
 import android.net.Uri
@@ -23,7 +23,6 @@ class BackupManager(
     private val db: FirebaseFirestore,
     private val productDao: ProductDao,
     private val transactionDao: TransactionDao,
-    private val cloudinaryService: CloudinaryService,
     private val context: Context
 ) {
     suspend fun backupProducts(userEmail: String?) {
@@ -46,7 +45,6 @@ class BackupManager(
             // Menyimpan path image local ke firebase
             if (!product.imageUri.isNullOrEmpty() && product.imageUri.startsWith("file://")) {
                 val uri = Uri.parse(product.imageUri)
-                imageUrl = suspendUploadImage(uri, product.id.toString())
             }
 
             val productMap = mapOf(
@@ -75,15 +73,6 @@ class BackupManager(
             transactionCollection.document(transaction.id.toString()).set(transactionMap).await()
         }
     }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun suspendUploadImage(uri: Uri, publicId: String): String? =
-        suspendCancellableCoroutine { cont ->
-            cloudinaryService.uploadImage(uri, publicId,
-                onSuccess = { url -> cont.resume(url) {} },
-                onError = { cont.resume(null) {} }
-            )
-        }
 
     suspend fun restoreProducts(userEmail: String?) {
         if (userEmail == null) return

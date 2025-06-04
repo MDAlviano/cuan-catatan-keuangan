@@ -3,8 +3,7 @@ package com.cuan.catatankeuangan.data.repository
 import android.content.Context
 import androidx.work.*
 import com.cuan.catatankeuangan.data.local.database.MainDatabase
-import com.cuan.catatankeuangan.repository.BackupManager
-import com.cuan.catatankeuangan.repository.CloudinaryService
+import com.cuan.catatankeuangan.data.repository.BackupManager
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
 
@@ -20,7 +19,6 @@ class AutoBackupWorker(
                 db = FirebaseFirestore.getInstance(),
                 productDao = db.productDao(),
                 transactionDao = db.transactionDao(),
-                cloudinaryService = CloudinaryService(applicationContext),
                 context = applicationContext
             )
 
