@@ -32,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 import com.cuan.catatankeuangan.presentation.navigation.BottomNavGraph
 import com.cuan.catatankeuangan.presentation.theme.Color2
+import com.cuan.catatankeuangan.repository.BackupManager
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.ReportViewModel
@@ -42,6 +43,8 @@ import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 fun MainScreen(
     transactionViewModel: TransactionViewModel,
     productViewModel: ProductViewModel,
+    bookViewModel: BookViewModel,
+    backupManager: BackupManager,
     bookViewModel: BookViewModel,
     reportViewModel: ReportViewModel
 ) {
@@ -79,6 +82,7 @@ fun MainScreen(
             transactionViewModel = transactionViewModel,
             productViewModel = productViewModel,
             bookViewModel = bookViewModel,
+            backupManager = backupManager,
             reportViewModel = reportViewModel
         )
     }

@@ -52,4 +52,10 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addTransactCrossRef(refs: TransactionProductCrossRef)
 
+    @Query("SELECT * FROM transaction_table")
+    suspend fun getAllTransactionsForBackup(): List<Transaction>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(transactions: List<Transaction>)
+
 }

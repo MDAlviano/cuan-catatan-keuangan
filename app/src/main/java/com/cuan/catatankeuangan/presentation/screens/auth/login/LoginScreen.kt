@@ -33,9 +33,17 @@ import com.cuan.catatankeuangan.presentation.components.TextFields
 import com.cuan.catatankeuangan.presentation.components.TopBar
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import com.cuan.catatankeuangan.presentation.utils.FirebaseAuthHelper
+import androidx.navigation.compose.rememberNavController
+import com.cuan.catatankeuangan.presentation.navigation.BottomBarScreen
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavController) {
+    val auth = FirebaseAuthHelper.auth
+    val context = LocalContext.current
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
@@ -45,7 +53,7 @@ fun LoginScreen() {
     ) {
         TopBar(
             modifier = Modifier.weight(1f),
-            onClick = { /* TODO */ },
+            onClick = { navController.navigate(BottomBarScreen.Profile.route) },
             text = "Masuk",
         )
         Column(
@@ -91,7 +99,21 @@ fun LoginScreen() {
                     textAlign = TextAlign.End
                 )
                 CustomButton(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        if (email.isBlank() || password.isBlank()) {
+                            Toast.makeText(context, "Email dan Password tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            auth.signInWithEmailAndPassword(email, password)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        Toast.makeText(context, "Login berhasil!", Toast.LENGTH_SHORT).show()
+                                        navController.navigate("profile")
+                                    } else {
+                                        Toast.makeText(context, "Login gagal: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                        }
+                    },
                     text = "Masuk",
                     icon = Icons.AutoMirrored.Filled.ArrowForward
                 )
@@ -101,7 +123,11 @@ fun LoginScreen() {
                     text = "Masuk dengan Kode"
                 )
                 Spacer(modifier = Modifier.height(40.dp))
-                RedirectText(text = "Belum punya akun? ", navText = "Daftar", onClick = {})
+                RedirectText(
+                    text = "Belum punya akun? ",
+                    navText = "Daftar",
+                    onClick = { navController.navigate("register") }
+                )
             }
         }
     }
@@ -110,5 +136,6 @@ fun LoginScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen()
+    val navController = rememberNavController()
+    LoginScreen(navController = navController)
 }

@@ -6,15 +6,18 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.cuan.catatankeuangan.presentation.screens.auth.login.LoginScreen
+import com.cuan.catatankeuangan.presentation.screens.auth.register.RegisterScreen
 import com.cuan.catatankeuangan.presentation.screens.history.HistoryScreen
 import com.cuan.catatankeuangan.presentation.screens.home.HomeScreen
 import com.cuan.catatankeuangan.presentation.screens.product.ProductScreen
 import com.cuan.catatankeuangan.presentation.screens.profile.ProfileScreen
 import com.cuan.catatankeuangan.presentation.screens.report.ReportScreen
+import com.cuan.catatankeuangan.data.repository.BackupManager
 import com.cuan.catatankeuangan.viewmodel.BookViewModel
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.ReportViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun BottomNavGraph(
@@ -23,6 +26,7 @@ fun BottomNavGraph(
     transactionViewModel: TransactionViewModel,
     productViewModel: ProductViewModel,
     bookViewModel: BookViewModel,
+    backupManager: BackupManager,
     reportViewModel: ReportViewModel
 ) {
     NavHost(
@@ -46,10 +50,13 @@ fun BottomNavGraph(
             )
         }
         composable(route = BottomBarScreen.Profile.route) {
-            ProfileScreen(navController, bottomNavHeight, bookViewModel)
+            ProfileScreen(navController, bottomNavHeight, bookViewModel, backupManager)
         }
         composable(route = "login") {
-            LoginScreen()
+            LoginScreen(navController)
+        }
+        composable(route = "register") {
+            RegisterScreen(navController)
         }
     }
 }

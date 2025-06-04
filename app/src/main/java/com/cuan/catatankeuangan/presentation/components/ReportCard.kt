@@ -40,6 +40,7 @@ import com.cuan.catatankeuangan.domain.model.CategoryReport
 import com.cuan.catatankeuangan.domain.model.ProductReportRejection
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -77,6 +78,7 @@ fun ReportCategoryCard(categoryReport: CategoryReport, modifier: Modifier = Modi
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
+                        fontFamily = interFamily,
                         text = "${categoryReport.totalTransactions} Transaksi",
 //                        fontFamily = outfitFamily,
                         fontSize = 10.sp,
