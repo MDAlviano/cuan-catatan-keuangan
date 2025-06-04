@@ -90,6 +90,7 @@ fun ProfileScreen(navController: NavController, bottomNavHeight: Dp, bookViewMod
                 Text(
                     text = "Profil",
                     fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
                     color = Color.White,
                     modifier = Modifier
                         .align(Alignment.TopCenter)

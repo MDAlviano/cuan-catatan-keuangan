@@ -56,7 +56,7 @@ import com.cuan.catatankeuangan.presentation.components.CategoryFilter
 import com.cuan.catatankeuangan.presentation.components.DatePickerField
 import com.cuan.catatankeuangan.presentation.components.InfoCard
 import com.cuan.catatankeuangan.presentation.components.ProductCard
-import com.cuan.catatankeuangan.presentation.screens.product.category.ProductCategory
+import com.cuan.catatankeuangan.presentation.screens.category.ProductCategory
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.Color3

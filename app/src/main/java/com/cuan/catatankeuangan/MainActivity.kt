@@ -21,18 +21,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CuanTheme {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(
-//                            bottom = WindowInsets.navigationBars
-//                                .asPaddingValues()
-//                                .calculateBottomPadding()
-//                        )
-//                ) {
-//                    HomeScreen(transactionViewModel)
-////                    ProductScreen()
-//                }
                 MainScreen(transactionViewModel, productViewModel, bookViewModel)
             }
         }

@@ -65,6 +65,8 @@ import com.cuan.catatankeuangan.presentation.components.WarningDialog
 import com.cuan.catatankeuangan.presentation.screens.category.ProductCategory
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
+import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
+import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import kotlinx.coroutines.Job
@@ -284,6 +286,7 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
                     )
                 }
 
+
                 if (filteredProducts.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
@@ -293,6 +296,13 @@ fun ProductScreen(bottomNavHeight: Dp, productViewModel: ProductViewModel) {
                         )
                     }
                 } else {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "${filteredProducts.size} produk",
+                        fontSize = 14.sp,
+                        fontFamily = interFamily,
+                        color = OptionalColor3
+                    )
                     LazyVerticalStaggeredGrid(
                         state = gridState,
                         columns = StaggeredGridCells.Adaptive(160.dp),

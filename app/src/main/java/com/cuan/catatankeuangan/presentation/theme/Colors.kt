@@ -46,7 +46,7 @@ fun Modifier.grayScale(): Modifier {
     return graphicsLayer {
         scaleX = 1f
         scaleY = 1f
-        alpha = 0.2f
+        alpha = 0.5f
     }
         .drawWithCache {
             onDrawWithContent {
