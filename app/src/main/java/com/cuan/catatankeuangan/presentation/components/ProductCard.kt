@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
@@ -40,12 +43,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,9 +62,11 @@ import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
+import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
 import com.cuan.catatankeuangan.presentation.theme.grayScale
 import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
+import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @Composable
 fun ProductCard(
@@ -71,6 +77,8 @@ fun ProductCard(
 ) {
 
     val outOfStock = product.stock <= 0
+
+//    val enabled = !outOfStock
 
     // Apply grey scale filter if product stock is empty
     val grayScale = if (outOfStock) {
@@ -100,6 +108,16 @@ fun ProductCard(
                         RoundedCornerShape(50)
                     )
                     .padding(6.dp, 2.dp)
+            )
+            Text(
+                text = "Produk ini habis.",
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                color = Color3,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .zIndex(100f)
             )
         }
         Card(

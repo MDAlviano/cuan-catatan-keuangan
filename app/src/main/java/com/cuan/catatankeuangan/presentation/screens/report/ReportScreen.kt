@@ -29,10 +29,10 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -52,49 +52,54 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cuan.catatankeuangan.R
 import com.cuan.catatankeuangan.data.local.entities.Product
+import com.cuan.catatankeuangan.domain.model.CategoryReport
+import com.cuan.catatankeuangan.domain.model.ProductReportRejection
 import com.cuan.catatankeuangan.presentation.components.CategoryFilter
 import com.cuan.catatankeuangan.presentation.components.DatePickerField
 import com.cuan.catatankeuangan.presentation.components.InfoCard
 import com.cuan.catatankeuangan.presentation.components.ProductCard
+import com.cuan.catatankeuangan.presentation.components.ReportCard
+import com.cuan.catatankeuangan.presentation.components.ReportCategoryCard
 import com.cuan.catatankeuangan.presentation.screens.category.ProductCategory
 import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color2
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.OptionalColor3
+import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import com.cuan.catatankeuangan.presentation.utils.getCustomTopPadding
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
+import com.cuan.catatankeuangan.viewmodel.ReportViewModel
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportScreen(
     bottomNavHeight: Dp,
+    reportViewModel: ReportViewModel,
     productViewModel: ProductViewModel
 ) {
-    val productList by productViewModel.allProducts.observeAsState(initial = emptyList())
-    var selectedProduct by remember { mutableStateOf<Product?>(null) }
-
     val categoryList by productViewModel.allCategories.observeAsState(initial = emptyList())
     var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
-
-    val filteredProducts = if (selectedCategoryId == null) {
-        productList
-    } else {
-        productList.filter { it.categoryId == selectedCategoryId }
-    }
-
-    val customTopPadding = getCustomTopPadding(16.dp)
+    val report by reportViewModel.salesReport.collectAsState()
+//    val categoryReport by reportViewModel.categoryReport.collectAsState()
+//    val totalIncome by reportViewModel.totalIncome.collectAsState()
+//    val totalExpense by reportViewModel.totalExpense.collectAsState()
 
     var textFieldValue by remember { mutableStateOf("") }
-
     var showCategory by remember { mutableStateOf(false) }
     var isRange by remember { mutableStateOf(false) }
-
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var startDate by remember { mutableStateOf<LocalDate?>(null) }
     var endDate by remember { mutableStateOf<LocalDate?>(null) }
 
+    val totalRevenue = report.sumOf { it.totalRevenue }
+    val totalProfit = report.sumOf { it.totalProfit }
+
     val gridState = rememberLazyStaggeredGridState()
+    val customTopPadding = getCustomTopPadding(16.dp)
+
+    var selectedReport by remember { mutableStateOf<ProductReportRejection?>(null) }
+    var showReportDetails by remember { mutableStateOf(false) }
 
     val bookType = "bisnis"
 
@@ -110,6 +115,14 @@ fun ReportScreen(
             .background(Color(0xFFF7F7F7))
             .padding(0.dp, customTopPadding, 0.dp, bottomNavHeight),
     ) {
+        selectedReport?.let {
+            ReportDetail(
+                productReportRejection = it,
+                showDialog = showReportDetails,
+                onDismiss = { showReportDetails = false }
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -183,6 +196,7 @@ fun ReportScreen(
                             date = startDate,
                             onDateSelected = {
                                 startDate = it
+                                reportViewModel.setDateRange(startDate, endDate)
                             }
                         )
 
@@ -212,6 +226,7 @@ fun ReportScreen(
                             date = endDate,
                             onDateSelected = {
                                 endDate = it
+                                reportViewModel.setDateRange(startDate, endDate)
                             }
                         )
                     }
@@ -250,6 +265,7 @@ fun ReportScreen(
                             date = selectedDate,
                             onDateSelected = {
                                 selectedDate = it
+                                reportViewModel.setSingleDateFilter(it)
                             }
                         )
                     }
@@ -272,7 +288,7 @@ fun ReportScreen(
                             .background(Color1),
                         image = painterResource(R.drawable.money_bag),
                         title = "Omset",
-                        value = "Rp10.000"
+                        value = formatAsCurrency(totalRevenue)
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -285,7 +301,7 @@ fun ReportScreen(
                             .background(Color1),
                         image = painterResource(R.drawable.finance_colored),
                         title = "Laba",
-                        value = "Rp10.000"
+                        value = formatAsCurrency(totalProfit)
                     )
                 }
 
@@ -294,7 +310,10 @@ fun ReportScreen(
                 // search field
                 OutlinedTextField(
                     value = textFieldValue,
-                    onValueChange = { textFieldValue = it },
+                    onValueChange = {
+                        textFieldValue = it
+                        reportViewModel.setProductName(it)
+                    },
                     placeholder = {
                         Text(
                             text = stringResource(R.string.search_product),
@@ -338,14 +357,20 @@ fun ReportScreen(
                     CategoryFilter(
                         categories = categoryList,
                         selectedCategoryId = selectedCategoryId,
-                        onCategorySelected = { selectedCategoryId = it }
+                        onCategorySelected = {
+                            selectedCategoryId = it
+                            reportViewModel.setCategoryFilter(it)
+                        }
                     )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                if (filteredProducts.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                if (report.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Text(
                             text = "Belum ada produk. Silahkan ke halaman produk untuk menambahkan produk baru.",
                             textAlign = TextAlign.Center,
@@ -361,17 +386,13 @@ fun ReportScreen(
                             .wrapContentHeight()
                             .padding(vertical = 6.dp)
                     ) {
-                        items(filteredProducts) { product ->
-                            ProductCard(
-                                product = product,
-                                onEditClick = {
-                                    selectedProduct = product
-                                },
-                                onDeleteClick = {
-                                    selectedProduct = product
-                                },
-                                category = categoryList.find { it.id == product.categoryId }?.name
-                                    ?: "Tanpa kategori",
+                        items(report) { reportItem ->
+                            ReportCard(
+                                productReportRejection = reportItem,
+                                onClick = {
+                                    showReportDetails = true
+                                    selectedReport = reportItem
+                                }
                             )
                         }
                     }
@@ -381,7 +402,6 @@ fun ReportScreen(
                 /**
                  * pribadi screen
                  */
-
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Row(
@@ -440,6 +460,7 @@ fun ReportScreen(
                             date = startDate,
                             onDateSelected = {
                                 startDate = it
+                                reportViewModel.setDateRange(startDate, endDate)
                             }
                         )
 
@@ -469,6 +490,7 @@ fun ReportScreen(
                             date = endDate,
                             onDateSelected = {
                                 endDate = it
+                                reportViewModel.setDateRange(startDate, endDate)
                             }
                         )
                     }
@@ -507,6 +529,7 @@ fun ReportScreen(
                             date = selectedDate,
                             onDateSelected = {
                                 selectedDate = it
+                                reportViewModel.setSingleDateFilter(it)
                             }
                         )
                     }
@@ -530,7 +553,8 @@ fun ReportScreen(
                         image = painterResource(R.drawable.arrow_up),
                         title = "Pemasukan",
                         titleSize = 12.sp,
-                        value = "Rp10.000"
+                        value = formatAsCurrency(0L)
+//                        value = formatAsCurrency(totalIncome.toLong())
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -544,7 +568,8 @@ fun ReportScreen(
                         image = painterResource(R.drawable.arrow_up),
                         title = "Pengeluaran",
                         titleSize = 12.sp,
-                        value = "Rp10.000"
+                        value = formatAsCurrency(0L)
+//                        value = formatAsCurrency(totalExpense.toLong())
                     )
                 }
 
@@ -553,7 +578,10 @@ fun ReportScreen(
                 // search field
                 OutlinedTextField(
                     value = textFieldValue,
-                    onValueChange = { textFieldValue = it },
+                    onValueChange = {
+                        textFieldValue = it
+
+                    },
                     placeholder = {
                         Text(
                             text = "Telusuri Kategori",
@@ -577,33 +605,34 @@ fun ReportScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Filter bar
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    IconButton(
-                        onClick = { showCategory = true },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = Color1,
-                            contentColor = Color.White
-                        )
+                if (report.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.filter),
-                            contentDescription = "Category button"
+                        Text(
+                            text = "Belum ada kategori. Silahkan untuk menambahkan kategori baru.",
+                            textAlign = TextAlign.Center,
                         )
                     }
-
-                    Spacer(modifier = Modifier.width(6.dp))
-
-                    CategoryFilter(
-                        categories = categoryList,
-                        selectedCategoryId = selectedCategoryId,
-                        onCategorySelected = { selectedCategoryId = it }
-                    )
+                } else {
+//                    LazyVerticalStaggeredGrid(
+//                        state = gridState,
+//                        columns = StaggeredGridCells.Adaptive(160.dp),
+//                        verticalItemSpacing = 10.dp,
+//                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+//                        modifier = Modifier
+//                            .wrapContentHeight()
+//                            .padding(vertical = 6.dp)
+//                    ) {
+//                        items(categoryReport) { reportItem ->
+//                            ReportCategoryCard(
+//                                categoryReport = reportItem,
+//                            )
+//                        }
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
             }
+
         }
     }
 }

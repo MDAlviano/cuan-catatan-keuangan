@@ -29,28 +29,26 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.rememberAsyncImagePainter
 import com.cuan.catatankeuangan.R
-import com.cuan.catatankeuangan.data.local.entities.Product
+import com.cuan.catatankeuangan.domain.model.ProductReportRejection
 import com.cuan.catatankeuangan.presentation.components.TopBar
 import com.cuan.catatankeuangan.presentation.theme.Color1
-import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 
 @Composable
 fun ReportDetail(
-    product: Product,
+    productReportRejection: ProductReportRejection,
     showDialog: Boolean,
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
 
     val detailProduct = mapOf(
-        "Produk" to product.name,
-        "Harga" to formatAsCurrency(product.sellPrice),
-        "Produk Terjual" to "15 Unit",
-        "Total Penjualan" to "Rp50.000",
-        "Total Modal" to "Rp30.000",
-        "Waktu" to "Sen, 25/02/25",
+        "Produk" to productReportRejection.productName,
+        "Harga" to formatAsCurrency(productReportRejection.sellPrice),
+        "Produk Terjual" to productReportRejection.totalSold.toString(),
+        "Total Penjualan" to formatAsCurrency(productReportRejection.totalSold.times(productReportRejection.sellPrice)),
+        "Total Modal" to formatAsCurrency(productReportRejection.totalSold.times(productReportRejection.buyPrice)),
     )
 
     if (showDialog) {
@@ -71,27 +69,31 @@ fun ReportDetail(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Image(
-                        painter = if (product.imageUri == null) {
+                        painter = if (productReportRejection.productImageUri == null) {
                             painterResource(id = R.drawable.profile)
                         } else {
                             rememberAsyncImagePainter(
-                                model = product.imageUri
+                                model = productReportRejection.productImageUri
                             )
                         },
                         contentDescription = "Product image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .height(70.dp)
-                            .width(70.dp)
+                            .height(120.dp)
+                            .width(120.dp)
                             .clip(RoundedCornerShape(10)),
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Column {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    ) {
                         for ((index, content) in detailProduct.entries.withIndex()) {
                             Row(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp, vertical = 14.dp)
                             ) {
                                 Text(
                                     modifier = Modifier.weight(1f),
@@ -105,25 +107,17 @@ fun ReportDetail(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(4.dp))
-
                             if (index <= detailProduct.size - 2) {
-                                HorizontalDivider(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    thickness = 1.dp,
-                                    color = Color3
-                                )
+                                HorizontalDivider(thickness = (0.5).dp, color = Color.LightGray)
                             }
-
-                            Spacer(modifier = Modifier.height(4.dp))
                         }
 
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .clip(RoundedCornerShape(size = 14.dp))
                                 .background(Color1)
-                                .clip(RoundedCornerShape(size = 10.dp))
-                                .padding(all = 12.dp)
+                                .padding(horizontal = 8.dp, vertical = 14.dp)
                         ) {
                             Text(
                                 modifier = Modifier.weight(1f),
@@ -133,7 +127,7 @@ fun ReportDetail(
                             )
                             Text(
                                 modifier = Modifier.weight(1f),
-                                text = formatAsCurrency(product.sellPrice - product.buyPrice),
+                                text = formatAsCurrency(productReportRejection.totalProfit),
                                 textAlign = TextAlign.End,
                                 color = Color.White,
                                 fontWeight = FontWeight.Medium

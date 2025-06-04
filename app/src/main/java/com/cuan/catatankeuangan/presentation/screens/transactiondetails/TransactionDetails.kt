@@ -19,6 +19,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.cuan.catatankeuangan.data.local.entities.Product
 import com.cuan.catatankeuangan.data.local.entities.Transaction
 import com.cuan.catatankeuangan.data.local.entities.TransactionType
 import com.cuan.catatankeuangan.presentation.components.AutoResizedText
@@ -46,16 +48,21 @@ import com.cuan.catatankeuangan.presentation.theme.interFamily
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
 import com.cuan.catatankeuangan.presentation.utils.formatAsCurrency
 import com.cuan.catatankeuangan.presentation.utils.getDate
+import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
 @Composable
 fun TransactionDetails(
     transactionViewModel: TransactionViewModel,
+    productViewModel: ProductViewModel,
     transaction: Transaction,
     showDialog: Boolean,
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
+
+    val transactionProducts = transactionViewModel.productSnapshots
+    val products by productViewModel.allProducts.observeAsState(initial = emptyList())
 
     val transactionType = if (transaction.transactionType == TransactionType.INCOME) {
         "Pemasukan"
@@ -66,10 +73,11 @@ fun TransactionDetails(
     }
 
     val description = transaction.description ?: "-"
+    val totalProducts = transactionProducts.size
 
     val information = mapOf(
         "Transaksi" to transactionType,
-        "Jumlah Produk" to "2",
+        "Jumlah Produk" to "$totalProducts",
         "Total" to formatAsCurrency(transaction.total),
         "Keterangan" to description,
         "Waktu" to getDate(transaction.timestamp)
@@ -142,26 +150,14 @@ fun TransactionDetails(
                             fontWeight = FontWeight.SemiBold
                         )
                         Column {
-                            DetailItem(
-                                isProductData = true,
-                                key = "Sunglasses",
-                                value = formatAsCurrency(10000),
-                                quantity = 2
-                            )
-                            HorizontalDivider(thickness = (0.5).dp, color = Color.LightGray)
-                            DetailItem(
-                                isProductData = true,
-                                key = "mbappe",
-                                value = formatAsCurrency(8000),
-                                quantity = 2
-                            )
-                            HorizontalDivider(thickness = (0.5).dp, color = Color.LightGray)
-                            DetailItem(
-                                isProductData = true,
-                                key = "nig",
-                                value = formatAsCurrency(1000),
-                                quantity = 2
-                            )
+                            transactionProducts.forEach { item ->
+                                DetailItem(
+                                    isProductData = true,
+                                    key = products.find { it.id == item.snapshot.productId }?.name ?: "-",
+                                    value = "Rp ${item.snapshot.sellPrice}",
+                                    quantity = item.quantity
+                                )
+                            }
                         }
                     }
 
