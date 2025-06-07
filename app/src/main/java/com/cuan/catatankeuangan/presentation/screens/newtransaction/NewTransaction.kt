@@ -14,7 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -329,9 +333,11 @@ fun NewTransactionDialog(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            LazyRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.height(240.dp)
+                            LazyVerticalGrid (
+                                columns = GridCells.Fixed(2),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                                modifier = Modifier.height(340.dp),
                             ) {
                                 items(selectedProducts) { selectedItem ->
                                     SelectedTransactionProductCard(
@@ -344,7 +350,6 @@ fun NewTransactionDialog(
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        // button untuk menyimpan transaksi
                         Button(
                             onClick = {
                                 val totalAmount = rawTotalAmount.value.toLongOrNull() ?: 0L
