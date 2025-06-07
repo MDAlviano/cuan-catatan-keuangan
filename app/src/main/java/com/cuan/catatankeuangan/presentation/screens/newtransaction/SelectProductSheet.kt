@@ -171,7 +171,6 @@ fun SelectProductSheet(
                         .padding(vertical = 6.dp, horizontal = 24.dp)
                 ) {
                     items(filteredProducts) { product ->
-                        // card masih salah dan masih belum sesuai
                         TransactionProductCard(
                             transactionViewModel = transactionViewModel,
                             product = product,

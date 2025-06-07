@@ -14,7 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -62,6 +66,7 @@ import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
+import com.cuan.catatankeuangan.presentation.utils.formatInputNominal
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
@@ -85,28 +90,14 @@ fun NewTransactionDialog(
 
     val selectedProducts = transactionViewModel.selectedProducts
 
-    val totalPemasukan by remember(selectedProducts) {
-        derivedStateOf {
-            val totalHarga = selectedProducts.sumOf { it.product.sellPrice }
-            val totalQuantity = selectedProducts.sumOf { it.quantity }
-            totalHarga * totalQuantity
-        }
-    }
-
     val rawTotalAmount = remember { mutableStateOf("") }
-
     var showProductSheet by remember { mutableStateOf(false) }
+
+    val totalPemasukan = selectedProducts.sumOf { it.product.sellPrice * it.quantity }
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false
     )
-
-    LaunchedEffect(selectedProducts) {
-        if (selectedProducts.isNotEmpty()) {
-            val newValue = totalPemasukan.toString()
-            totalAmountField = TextFieldValue(newValue)
-            rawTotalAmount.value = newValue
-        }
-    }
 
     if (showDialog) {
         Dialog(
@@ -260,10 +251,11 @@ fun NewTransactionDialog(
                     ) {
                         CurrencyTextField(
                             label = if (selectedType == "Pemasukan") "Total Pemasukan" else "Total Pengeluaran",
-                            fieldValue = totalAmountField,
+                            fieldValue = if (selectedProducts.isNotEmpty()) formatInputNominal(TextFieldValue(totalPemasukan.toString()), rawTotalAmount) else totalAmountField,
                             rawValue = rawTotalAmount,
-                            onValueChange = { newValue ->
-                                totalAmountField = newValue
+                            onValueChange = {
+                                totalAmountField = it
+                                rawTotalAmount.value = it.toString()
                             }
                         )
 
@@ -341,10 +333,11 @@ fun NewTransactionDialog(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // ini adalah list produk yang sudah ditambahkan
-                            LazyRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.height(240.dp)
+                            LazyVerticalGrid (
+                                columns = GridCells.Fixed(2),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                                modifier = Modifier.height(340.dp),
                             ) {
                                 items(selectedProducts) { selectedItem ->
                                     SelectedTransactionProductCard(
@@ -357,7 +350,6 @@ fun NewTransactionDialog(
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        // button untuk menyimpan transaksi
                         Button(
                             onClick = {
                                 val totalAmount = rawTotalAmount.value.toLongOrNull() ?: 0L
