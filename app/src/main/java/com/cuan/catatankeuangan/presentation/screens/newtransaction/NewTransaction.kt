@@ -62,6 +62,7 @@ import com.cuan.catatankeuangan.presentation.theme.Color1
 import com.cuan.catatankeuangan.presentation.theme.Color3
 import com.cuan.catatankeuangan.presentation.theme.MainBgColor
 import com.cuan.catatankeuangan.presentation.theme.ralewayFamily
+import com.cuan.catatankeuangan.presentation.utils.formatInputNominal
 import com.cuan.catatankeuangan.viewmodel.ProductViewModel
 import com.cuan.catatankeuangan.viewmodel.TransactionViewModel
 
@@ -85,28 +86,14 @@ fun NewTransactionDialog(
 
     val selectedProducts = transactionViewModel.selectedProducts
 
-    val totalPemasukan by remember(selectedProducts) {
-        derivedStateOf {
-            val totalHarga = selectedProducts.sumOf { it.product.sellPrice }
-            val totalQuantity = selectedProducts.sumOf { it.quantity }
-            totalHarga * totalQuantity
-        }
-    }
-
     val rawTotalAmount = remember { mutableStateOf("") }
-
     var showProductSheet by remember { mutableStateOf(false) }
+
+    val totalPemasukan = selectedProducts.sumOf { it.product.sellPrice * it.quantity }
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false
     )
-
-    LaunchedEffect(selectedProducts) {
-        if (selectedProducts.isNotEmpty()) {
-            val newValue = totalPemasukan.toString()
-            totalAmountField = TextFieldValue(newValue)
-            rawTotalAmount.value = newValue
-        }
-    }
 
     if (showDialog) {
         Dialog(
@@ -260,10 +247,11 @@ fun NewTransactionDialog(
                     ) {
                         CurrencyTextField(
                             label = if (selectedType == "Pemasukan") "Total Pemasukan" else "Total Pengeluaran",
-                            fieldValue = totalAmountField,
+                            fieldValue = if (selectedProducts.isNotEmpty()) formatInputNominal(TextFieldValue(totalPemasukan.toString()), rawTotalAmount) else totalAmountField,
                             rawValue = rawTotalAmount,
-                            onValueChange = { newValue ->
-                                totalAmountField = newValue
+                            onValueChange = {
+                                totalAmountField = it
+                                rawTotalAmount.value = it.toString()
                             }
                         )
 
@@ -341,7 +329,6 @@ fun NewTransactionDialog(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // ini adalah list produk yang sudah ditambahkan
                             LazyRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier.height(240.dp)
